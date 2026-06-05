@@ -41,34 +41,40 @@ export default function CustomCursor() {
 
   const variants = {
     default: {
-      x: mousePosition.x - 10,
-      y: mousePosition.y - 10,
-      width: 20,
-      height: 20,
-      backgroundColor: "rgba(34, 197, 94, 0.4)",
-      border: "1px solid rgba(34, 197, 94, 0.8)",
+      x: mousePosition.x - 6,
+      y: mousePosition.y - 6,
+      width: 12,
+      height: 12,
+      backgroundColor: "#22c55e",
+      borderRadius: "0%",
+      rotate: 45,
+      border: "1px solid #22c55e",
     },
     hover: {
-      x: mousePosition.x - 15,
-      y: mousePosition.y - 15,
-      width: 30,
-      height: 30,
-      backgroundColor: "rgba(34, 197, 94, 0.1)",
-      border: "2px solid rgba(34, 197, 94, 1)",
+      x: mousePosition.x - 12,
+      y: mousePosition.y - 12,
+      width: 24,
+      height: 24,
+      backgroundColor: "transparent",
+      borderRadius: "0%",
+      rotate: 135,
+      border: "2px solid #22c55e",
     },
     waitlist: {
-      x: mousePosition.x - 40,
-      y: mousePosition.y - 40,
-      width: 80,
-      height: 80,
+      x: mousePosition.x - 30,
+      y: mousePosition.y - 30,
+      width: 60,
+      height: 60,
       backgroundColor: "rgba(34, 197, 94, 0.2)",
-      border: "2px dashed rgba(34, 197, 94, 1)",
+      borderRadius: "0%",
+      rotate: -45,
+      border: "2px dashed #22c55e",
     }
   };
 
   return (
     <motion.div
-      className="fixed top-0 left-0 rounded-full pointer-events-none z-[9999] flex items-center justify-center mix-blend-screen"
+      className="fixed top-0 left-0 pointer-events-none z-[9999] flex items-center justify-center mix-blend-screen"
       animate={cursorVariant}
       variants={variants}
       transition={{ type: "spring", stiffness: 500, damping: 28, mass: 0.5 }}
@@ -77,7 +83,7 @@ export default function CustomCursor() {
         {cursorVariant === 'waitlist' && (
           <motion.span 
             initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
+            animate={{ opacity: 1, scale: 1, rotate: 45 }}
             exit={{ opacity: 0, scale: 0.5 }}
             className="text-[10px] font-bold text-nomad-green uppercase tracking-widest leading-none drop-shadow-[0_0_5px_rgba(34,197,94,0.8)]"
           >
