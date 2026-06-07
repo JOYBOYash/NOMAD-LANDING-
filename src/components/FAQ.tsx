@@ -28,12 +28,12 @@ export default function FAQ() {
     <section className="py-24 md:py-32 bg-[#111] text-nomad-ivory overflow-hidden relative border-b border-white/5">
       <motion.div 
         variants={{
-          hidden: { opacity: 0 },
-          show: { opacity: 1, transition: { staggerChildren: 0.15 } }
+          hidden: { opacity: 0, y: 80 },
+          show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.15 } }
         }}
         initial="hidden"
         whileInView="show"
-        viewport={{ once: true, margin: "-100px" }}
+        viewport={{ once: true, amount: 0.1 }}
         className="max-w-4xl mx-auto px-6 relative z-10 w-full"
       >
         

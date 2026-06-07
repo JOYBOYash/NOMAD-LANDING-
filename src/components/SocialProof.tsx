@@ -131,7 +131,7 @@ export default function SocialProof() {
         <motion.div 
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, amount: 0.1 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
           className="mb-24 md:mb-32 relative inline-flex justify-center"
         >
@@ -150,12 +150,12 @@ export default function SocialProof() {
         {/* Masonry Image Grid */}
         <motion.div 
            variants={{
-             hidden: { opacity: 0 },
-             show: { opacity: 1, transition: { staggerChildren: 0.15 } }
+             hidden: { opacity: 0, y: 80 },
+             show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.15 } }
            }}
            initial="hidden"
            whileInView="show"
-           viewport={{ once: true, margin: "-100px" }}
+           viewport={{ once: true, amount: 0.1 }}
            className="grid grid-cols-1 md:grid-cols-12 gap-4 lg:gap-6 w-full max-w-6xl mx-auto auto-rows-[250px] md:auto-rows-[300px] mb-24"
         >
            

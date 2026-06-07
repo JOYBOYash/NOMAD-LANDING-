@@ -1,132 +1,139 @@
-import { motion } from 'motion/react';
-import { SmartphoneNfc, Users, BatteryWarning, TrendingDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { useState, useEffect } from 'react';
 
 export default function Problem() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    if (isHovered) return;
+    
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % painPoints.length);
+    }, 4000);
+    
+    return () => clearInterval(interval);
+  }, [isHovered]);
+
   const painPoints = [
     {
-      icon: <SmartphoneNfc className="w-8 h-8" />,
       title: "Scattered Apps",
       desc: "Attendees juggle multiple apps just to find what's happening. Broken navigation means endless confusion."
     },
     {
-      icon: <Users className="w-8 h-8" />,
       title: "Low Traffic",
       desc: "Organizers fight low booth traffic and poor crowd control with passive attendees."
     },
     {
-      icon: <BatteryWarning className="w-8 h-8" />,
-      title: "Zero Analytics",
-      desc: "No real control or analytics for organizers in real-time."
-    },
-    {
-      icon: <TrendingDown className="w-8 h-8" />,
       title: "Wasted Budgets",
       desc: "Sponsors wasting budgets with zero measurable ROI as booths get ignored."
     }
   ];
 
   return (
-    <section className="py-24 bg-nomad-charcoal text-nomad-ivory overflow-hidden relative">
+    <section className="py-24 md:py-32 bg-nomad-charcoal text-nomad-ivory overflow-hidden relative border-b border-white/5">
       <motion.div 
         variants={{
-          hidden: { opacity: 0 },
-          show: { opacity: 1, transition: { staggerChildren: 0.2 } }
+          hidden: { opacity: 0, y: 80 },
+          show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.2 } }
         }}
         initial="hidden"
         whileInView="show"
-        viewport={{ once: true, margin: "-100px" }}
+        viewport={{ once: true, amount: 0.1 }}
         className="max-w-7xl mx-auto px-6 relative z-10 w-full"
       >
         
         {/* Header Section mimicking the reference */}
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-start lg:items-end mb-16 border-b border-white/10 pb-12">
-          <motion.div 
-            variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}
-            className="flex-1"
-          >
-            <div className="text-sm font-bold uppercase tracking-widest text-nomad-ivory/60 mb-6">The Real Problem</div>
-            <div className="flex items-center gap-4 lg:gap-8">
-              <h2 className="text-[40px] md:text-[50px] lg:text-[70px] xl:text-[80px] max-w-[800px] font-display font-black uppercase tracking-tighter leading-[0.9] text-white">
-                EVENTS TODAY ARE <span className="text-[#111] bg-nomad-green px-2 relative inline-block -rotate-2 mx-1 md:mx-2">STUCK</span> <br/>
-                IN THE PAST
-              </h2>
-            </div>
-          </motion.div>
-          
-          <motion.div 
-            variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}
-            className="max-w-sm flex shrink-0 flex-col items-start gap-6"
-          >
-            <p className="font-bold text-nomad-ivory/70 text-sm md:text-base leading-relaxed">
+        <div className="mb-16 md:mb-24 flex flex-col items-start max-w-5xl">
+          <motion.div variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}>
+            <div className="text-sm font-bold uppercase tracking-widest text-[#FFD700] mb-4">The Real Problem</div>
+            <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-display font-black uppercase tracking-tighter leading-[0.9] text-white mb-6">
+              EVENTS TODAY ARE <span className="text-nomad-green">STUCK</span> <br className="hidden md:block"/>
+              IN THE PAST
+            </h2>
+            <p className="font-bold text-white/50 text-base md:text-lg leading-relaxed max-w-3xl">
               Attendees juggle multiple apps. Organizers fight low engagement and poor crowd control. Sponsors get ignored.
             </p>
-            <motion.a 
-              href="#solution"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-[#FFD700] text-nomad-charcoal rounded-full font-black uppercase tracking-widest text-sm transition-all hover:shadow-[0_0_20px_rgba(255,215,0,0.4)] whitespace-nowrap"
-            >
-              See The Solution
-            </motion.a>
           </motion.div>
         </div>
 
-        {/* Bento Grid mimicking the lower image layout */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[300px]">
+        {/* Content Section mimicking the reference lower half */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-start">
           
-          {/* Card 1 - Small Left */}
+          {/* Left Large Image */}
           <motion.div 
-            variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}
-            className="relative rounded-[2rem] overflow-hidden bg-[#111] group border border-white/5"
+            variants={{ hidden: { opacity: 0, scale: 0.95 }, show: { opacity: 1, scale: 1, transition: { duration: 0.6 } } }}
+            className="w-full aspect-square md:aspect-[4/3] lg:aspect-square relative rounded-[2rem] overflow-hidden"
           >
-            <img src="https://images.unsplash.com/photo-1511516172551-787db8c0be64?q=80&w=600&auto=format&fit=crop" alt="Boring Event" className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" />
-            <div className="absolute inset-0 bg-gradient-to-t from-nomad-charcoal via-transparent to-transparent opacity-80" />
-            <div className="absolute bottom-0 left-0 p-8 w-full z-10 flex flex-col items-start gap-4">
-               <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/20">
-                 <SmartphoneNfc className="w-6 h-6" />
-               </div>
-               <h3 className="text-xl font-sans font-black uppercase tracking-widest text-white">Scattered Apps</h3>
-            </div>
+             <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1200&auto=format&fit=crop" alt="Boring Event" className="absolute inset-0 w-full h-full object-cover grayscale mix-blend-luminosity opacity-80 hover:grayscale-0 hover:mix-blend-normal hover:opacity-100 transition-all duration-700" />
           </motion.div>
 
-          {/* Card 2 - Large Center/Right */}
-          <motion.div 
-            variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}
-            className="md:col-span-2 relative rounded-[2rem] overflow-hidden bg-[#111] group border border-white/5"
-          >
-            <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1200&auto=format&fit=crop" alt="Low Engagement" className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-overlay grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110" />
-            <div className="absolute inset-0 bg-gradient-to-t from-nomad-charcoal via-[#111]/40 to-transparent opacity-90" />
-            <div className="absolute top-8 right-8">
-               <div className="w-16 h-16 bg-nomad-green rounded-full flex items-center justify-center text-nomad-charcoal rotate-12 group-hover:rotate-[360deg] transition-all duration-700">
-                 <Users className="w-8 h-8" />
-               </div>
-            </div>
-            <div className="absolute bottom-0 left-0 p-8 w-full z-10">
-               <div className="text-nomad-green font-bold uppercase tracking-widest mb-3 text-sm">The Organizer Nightmare</div>
-               <h3 className="text-3xl md:text-5xl font-display font-black uppercase tracking-widest text-white leading-[0.9]">Low Traffic &<br/> Poor Control</h3>
-            </div>
-          </motion.div>
+          {/* Right Column: Stack of Items */}
+          <div className="flex flex-col w-full border-t border-white/10">
+             {painPoints.map((item, i) => {
+                 const isActive = activeIndex === i;
+                 return (
+                   <motion.div 
+                     key={i} 
+                     variants={{ hidden: { opacity: 0, x: 20 }, show: { opacity: 1, x: 0, transition: { duration: 0.5, delay: i * 0.1 } } }}
+                     onMouseEnter={() => { setActiveIndex(i); setIsHovered(true); }}
+                     onMouseLeave={() => setIsHovered(false)}
+                     className="py-6 md:py-8 border-b border-white/10 flex flex-col group cursor-default transition-all duration-300 relative"
+                   >
+                      <div className="flex items-center justify-between pointer-events-none">
+                         <h3 className={`text-2xl md:text-3xl lg:text-4xl font-display font-black tracking-wider uppercase transition-colors duration-300 ${isActive ? 'text-white' : 'text-white/40'}`}>
+                            <span className={isActive ? 'text-nomad-green' : ''}>{item.title.split(' ')[0]}</span> {item.title.split(' ').slice(1).join(' ')}
+                         </h3>
+                         <motion.div 
+                           animate={{ 
+                             rotate: isActive ? 90 : 0,
+                             scale: isActive ? 1.2 : 1,
+                             color: isActive ? '#22c55e' : 'rgba(255,255,255,0.4)' 
+                           }}
+                           transition={{ duration: 0.4, ease: "easeOut" }}
+                           className="text-4xl font-black origin-center select-none"
+                         >
+                            *
+                         </motion.div>
+                      </div>
+                      
+                      <AnimatePresence initial={false}>
+                        {isActive && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.4, ease: "easeInOut" }}
+                            className="overflow-hidden"
+                          >
+                            <p className="text-white/60 font-bold leading-relaxed max-w-lg text-sm md:text-base pr-8 pt-4 pb-2 pointer-events-none">
+                               {item.desc}
+                            </p>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
 
-          {/* Card 3 - Wide Bottom */}
-          <motion.div 
-            variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}
-            className="md:col-span-3 h-auto relative rounded-[2rem] overflow-hidden bg-[#111] border border-white/5 p-8 lg:p-12 flex flex-col md:flex-row items-center justify-between gap-8 group hover:border-white/20 transition-colors"
-          >
-             <div className="flex items-center gap-6">
-                <div className="w-20 h-20 bg-white/5 border border-white/10 rounded-full flex shrink-0 items-center justify-center text-nomad-green -rotate-6 group-hover:rotate-0 transition-transform">
-                  <TrendingDown className="w-10 h-10" />
-                </div>
-                <div>
-                   <h3 className="text-2xl md:text-4xl font-display font-black uppercase tracking-widest text-white mb-2">Zero ROI for Sponsors</h3>
-                   <p className="text-nomad-ivory/60 font-medium max-w-xl text-sm md:text-base">Budgets are wasted blindly when booths get ignored because attendees have no incentive to explore the venue.</p>
-                </div>
-             </div>
-             
-             <div className="flex items-center gap-3 bg-nomad-green text-nomad-charcoal px-6 py-3 rounded-full shrink-0">
-                <span className="font-black text-xl">90%</span>
-                <span className="text-xs font-bold uppercase tracking-widest opacity-80">Sponsor<br/>Drop-off</span>
-             </div>
-          </motion.div>
+                      {/* Progress Bar Line */}
+                      {isActive && !isHovered && (
+                        <motion.div
+                          className="absolute bottom-[-1px] left-0 h-[2px] bg-nomad-green z-10"
+                          initial={{ width: "0%" }}
+                          animate={{ width: "100%" }}
+                          transition={{ duration: 4, ease: "linear" }}
+                        />
+                      )}
+                      {isActive && isHovered && (
+                        <motion.div
+                          className="absolute bottom-[-1px] left-0 h-[2px] bg-nomad-green z-10"
+                          initial={{ width: "100%" }}
+                          animate={{ width: "100%" }}
+                          transition={{ duration: 0 }}
+                        />
+                      )}
+                   </motion.div>
+                 );
+             })}
+          </div>
 
         </div>
       </motion.div>
