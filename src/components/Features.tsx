@@ -32,15 +32,6 @@ export default function Features() {
     return () => clearInterval(interval);
   }, [isHovered]);
 
-  // Use fixed arrays to prevent hooks in loop rules
-  const yTransforms = [
-    useTransform(scrollYProgress, [0, 1], [0, 0]),
-    useTransform(scrollYProgress, [0, 1], isDesktop ? [40, -40] : [0, 0]),
-    useTransform(scrollYProgress, [0, 1], isDesktop ? [80, -80] : [0, 0]),
-    useTransform(scrollYProgress, [0, 1], [0, 0]),
-    useTransform(scrollYProgress, [0, 1], isDesktop ? [40, -40] : [0, 0]),
-    useTransform(scrollYProgress, [0, 1], isDesktop ? [80, -80] : [0, 0]),
-  ];
   const features = [
     {
       icon: <MapPin strokeWidth={2} className="w-[28px] h-[28px]" />,
@@ -96,7 +87,7 @@ export default function Features() {
           variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}
           className="text-center mb-16 flex flex-col items-center"
         >
-           <h2 className="text-[50px] md:text-[60px] lg:text-[70px] leading-none font-black font-display uppercase tracking-[-0.03em] text-white">
+           <h2 className="text-[36px] sm:text-[44px] md:text-[60px] lg:text-[70px] leading-none font-black font-display uppercase tracking-[-0.03em] text-white">
              Why Nomad Wins
            </h2>
         </motion.div>
@@ -111,7 +102,6 @@ export default function Features() {
             return (
               <motion.div
                  key={idx}
-                 style={{ y: yTransforms[idx] }}
                  variants={{ hidden: { opacity: 0, scale: 0.95, y: 50 }, show: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } } }}
                  className="flex w-full h-full"
               >

@@ -47,7 +47,7 @@ export default function Problem() {
         <div className="mb-16 md:mb-24 flex flex-col items-start max-w-5xl">
           <motion.div variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}>
             <div className="text-sm font-bold uppercase tracking-widest text-[#FFD700] mb-4">The Real Problem</div>
-            <h2 className="text-[40px] md:text-[60px] lg:text-[80px] font-display font-black uppercase tracking-tighter leading-[0.9] text-white mb-6">
+            <h2 className="text-[32px] sm:text-[44px] md:text-[60px] lg:text-[80px] font-display font-black uppercase tracking-tighter leading-[0.9] text-white mb-6">
               EVENTS TODAY ARE <span className="text-nomad-green">STUCK</span> <br className="hidden md:block"/>
               IN THE PAST
             </h2>

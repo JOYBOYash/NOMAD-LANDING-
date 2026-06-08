@@ -60,43 +60,51 @@ export default function HowItWorks() {
               key={i}
               variants={{ hidden: { opacity: 0, x: -30 }, show: { opacity: 1, x: 0, transition: { duration: 0.8, ease: "easeOut" } } }}
               onHoverStart={() => setActiveStep(i)}
-              className="flex w-full group relative"
+              className="flex flex-col w-full group relative"
             >
-              {/* Timeline Column */}
-              <div className="flex flex-col items-center shrink-0 mr-4 md:mr-8 w-14 md:w-20">
-                 {/* Number Circle */}
-                 <div className={`w-14 h-14 md:w-20 md:h-20 rounded-full flex items-center justify-center border-[1.5px] font-black font-sans text-xl md:text-3xl transition-all duration-500 z-10 shrink-0 ${isActive ? 'border-nomad-green text-nomad-green bg-[#111] shadow-[0_0_25px_rgba(34,197,94,0.25)] scale-[1.15]' : 'border-white/10 text-white/30 bg-[#111] group-hover:border-white/30 group-hover:text-white/50'}`}>
-                   {step.num}
-                 </div>
-                 
-                 {/* Connecting Line */}
-                 {i !== steps.length - 1 && (
-                   <div className={`w-[2px] grow min-h-[40px] my-4 transition-all duration-500 rounded-full ${isActive ? 'bg-gradient-to-b from-nomad-green to-white/10 scale-y-100 opacity-100 shadow-[0_0_10px_rgba(34,197,94,0.5)]' : 'bg-white/10 opacity-30'} ${activeStep === i + 1 ? 'bg-gradient-to-t from-nomad-green to-white/10 shadow-[0_0_10px_rgba(34,197,94,0.5)] opacity-100' : ''}`} />
-                 )}
+              {/* Main Step Row (Circle + Card aligned centered) */}
+              <div className="flex w-full items-center">
+                {/* Number Circle Column */}
+                <div className="flex justify-center shrink-0 mr-4 md:mr-8 w-14 md:w-20">
+                   {/* Number Circle */}
+                   <div className={`w-14 h-14 md:w-20 md:h-20 rounded-full flex items-center justify-center border-[1.5px] font-black font-sans text-xl md:text-3xl transition-all duration-500 z-10 shrink-0 ${isActive ? 'border-nomad-green text-nomad-green bg-[#111] shadow-[0_0_25px_rgba(34,197,94,0.25)] scale-[1.15]' : 'border-white/10 text-white/30 bg-[#111] group-hover:border-white/30 group-hover:text-white/50'}`}>
+                     {step.num}
+                   </div>
+                </div>
+
+                {/* Card Container */}
+                <div className="flex-1">
+                  <motion.div
+                    animate={isActive ? { scale: 1.02 } : { scale: 1 }}
+                    className={`w-full h-full text-white p-6 md:p-8 rounded-[2rem] flex flex-col md:flex-row items-start md:items-center justify-between gap-6 overflow-hidden relative cursor-pointer border transition-colors duration-500 bg-[#111] ${isActive ? 'border-nomad-green/50 shadow-[0_0_30px_rgba(34,197,94,0.1)]' : 'border-white/5 group-hover:border-white/10'}`}
+                  >
+                    <div className={`absolute inset-0 transition-colors duration-500 ${isActive ? 'bg-nomad-green/5' : 'bg-nomad-green/0'}`} />
+                    
+                    <div className="flex-1 relative z-10">
+                      <h3 className={`text-2xl md:text-3xl font-sans font-black uppercase tracking-widest transition-colors duration-500 mb-2 ${isActive ? 'text-nomad-green' : 'text-white'}`}>
+                         {step.title}
+                      </h3>
+                      <div className={`flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-widest transition-colors duration-500 ${isActive ? 'text-white/80' : 'text-white/50'}`}>
+                         <span className={`w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-500 ${isActive ? 'bg-nomad-green animate-pulse' : 'bg-white/30'}`} /> {step.desc}
+                      </div>
+                    </div>
+                    
+                    <div className={`relative z-10 shrink-0 mt-4 md:mt-0 transition-all duration-500 hidden md:block ${isActive ? 'text-nomad-green translate-x-1' : 'text-white/30 opacity-50 group-hover:translate-x-1 group-hover:text-white/60'}`}>
+                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </div>
+                  </motion.div>
+                </div>
               </div>
 
-              {/* Card Container */}
-              <div className="flex-1 pb-10">
-                <motion.div
-                  animate={isActive ? { scale: 1.02 } : { scale: 1 }}
-                  className={`w-full h-full text-white p-6 md:p-8 rounded-[2rem] flex flex-col md:flex-row items-start md:items-center justify-between gap-6 overflow-hidden relative cursor-pointer border transition-colors duration-500 bg-[#111] ${isActive ? 'border-nomad-green/50 shadow-[0_0_30px_rgba(34,197,94,0.1)]' : 'border-white/5 group-hover:border-white/10'}`}
-                >
-                  <div className={`absolute inset-0 transition-colors duration-500 ${isActive ? 'bg-nomad-green/5' : 'bg-nomad-green/0'}`} />
-                  
-                  <div className="flex-1 relative z-10">
-                    <h3 className={`text-2xl md:text-3xl font-sans font-black uppercase tracking-widest transition-colors duration-500 mb-2 ${isActive ? 'text-nomad-green' : 'text-white'}`}>
-                       {step.title}
-                    </h3>
-                    <div className={`flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-widest transition-colors duration-500 ${isActive ? 'text-white/80' : 'text-white/50'}`}>
-                       <span className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${isActive ? 'bg-nomad-green animate-pulse' : 'bg-white/30'}`} /> {step.desc}
-                    </div>
+              {/* Connecting Line Row */}
+              {i !== steps.length - 1 && (
+                <div className="flex w-full">
+                  <div className="flex justify-center shrink-0 mr-4 md:mr-8 w-14 md:w-20">
+                     <div className={`w-[2px] h-[30px] md:h-[40px] my-3 md:my-4 transition-all duration-500 rounded-full ${isActive ? 'bg-gradient-to-b from-nomad-green to-white/10 scale-y-100 opacity-100 shadow-[0_0_10px_rgba(34,197,94,0.5)]' : 'bg-white/10 opacity-30'} ${activeStep === i + 1 ? 'bg-gradient-to-t from-nomad-green to-white/10 shadow-[0_0_10px_rgba(34,197,94,0.5)] opacity-100' : ''}`} />
                   </div>
-                  
-                  <div className={`relative z-10 shrink-0 mt-4 md:mt-0 transition-all duration-500 hidden md:block ${isActive ? 'text-nomad-green translate-x-1' : 'text-white/30 opacity-50 group-hover:translate-x-1 group-hover:text-white/60'}`}>
-                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </div>
-                </motion.div>
-              </div>
+                  <div className="flex-1" />
+                </div>
+              )}
             </motion.div>
           )})}
         </div>

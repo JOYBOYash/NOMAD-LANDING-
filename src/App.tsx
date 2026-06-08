@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, useScroll, AnimatePresence } from 'motion/react';
+import Lenis from 'lenis';
 import Hero from './components/Hero';
 import Problem from './components/Problem';
 import Difference from './components/Difference';
@@ -51,13 +52,6 @@ function LoadingScreen({ onComplete }: { onComplete: () => void }) {
         >
           NOMAD
         </motion.h1>
-        
-        <div className="absolute mb-6 w-64 h-[2px] bg-white/10 overflow-hidden mix-blend-difference rounded-full">
-           <motion.div 
-             className="h-full bg-nomad-green w-full"
-             style={{ transform: `translateX(${progress - 100}%)` }}
-           />
-        </div>
       </motion.div>
 
       {/* Bottom half sliding down */}
@@ -71,8 +65,21 @@ function LoadingScreen({ onComplete }: { onComplete: () => void }) {
         >
           NOMAD
         </motion.h1>
+      </motion.div>
 
-        <div className="absolute mt-6 text-nomad-green font-mono font-bold text-sm tracking-widest mix-blend-difference">
+      {/* Progress Bar (Centered over everything) */}
+      <motion.div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 translate-y-[10vw] lg:translate-y-24 z-30 flex flex-col items-center pointer-events-none"
+        initial={{ opacity: 1 }}
+        exit={{ opacity: 0, transition: { duration: 0.3 } }}
+      >
+        <div className="w-48 lg:w-64 h-[2px] bg-white/10 overflow-hidden rounded-full">
+           <motion.div 
+             className="h-full bg-nomad-green w-full"
+             style={{ transform: `translateX(${progress - 100}%)` }}
+           />
+        </div>
+        <div className="mt-4 text-nomad-green font-mono font-bold text-xs lg:text-sm tracking-widest">
            {Math.floor(progress)}%
         </div>
       </motion.div>
@@ -96,6 +103,23 @@ function MainApp() {
   };
 
   useEffect(() => {
+    // Initialize Lenis
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // https://www.desmos.com/calculator/brs54l4xou
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      touchMultiplier: 2,
+    });
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
     if (isLoading) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -111,13 +135,11 @@ function MainApp() {
 
     if (!isLoading) {
       document.addEventListener('mouseleave', handleMouseLeave);
-      return () => {
-        document.removeEventListener('mouseleave', handleMouseLeave);
-        document.body.style.overflow = 'auto';
-      };
     }
     
     return () => {
+      lenis.destroy();
+      document.removeEventListener('mouseleave', handleMouseLeave);
       document.body.style.overflow = 'auto';
     };
   }, [userDismissedModal, isModalOpen, isLoading]);
