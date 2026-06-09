@@ -142,7 +142,7 @@ export default function Features() {
 
                       {/* Large Scaled Icon Background */}
                       <div className="absolute -bottom-8 -right-8 w-40 h-40 text-white/[0.03] transition-transform duration-700 pointer-events-none group-hover:scale-110 z-0">
-                        {React.cloneElement(feature.icon as React.ReactElement, { className: 'w-full h-full' })}
+                        {React.cloneElement(feature.icon as React.ReactElement<any>, { className: 'w-full h-full' })}
                       </div>
                    </div>
 

@@ -1,9 +1,10 @@
-import { createContext, useContext, useState, ReactNode, useRef } from 'react';
+import { createContext, useContext, useState, ReactNode, useRef, useEffect } from 'react';
 
 interface AppContextType {
   isSoundEnabled: boolean;
   toggleSound: () => void;
   playHover: () => void;
+  playClick: () => void;
   cursorVariant: 'default' | 'hover' | 'waitlist';
   setCursorVariant: (variant: 'default' | 'hover' | 'waitlist') => void;
 }
@@ -15,6 +16,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [cursorVariant, setCursorVariant] = useState<'default' | 'hover' | 'waitlist'>('default');
   
   const audioCtxRef = useRef<AudioContext | null>(null);
+  const clickAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    // Preload click audio
+    const audio = new Audio('https://www.dropbox.com/scl/fi/1jk9cld0kmtnwejlcvgdo/mouseclick.mp3?rlkey=mzggow9uor8ilwrxy14qbuatl&raw=1');
+    audio.preload = 'auto';
+    clickAudioRef.current = audio;
+  }, []);
 
   const initAudio = () => {
     if (!audioCtxRef.current) {
@@ -22,6 +31,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (AudioContextClass) {
         audioCtxRef.current = new AudioContextClass();
       }
+    }
+    if (clickAudioRef.current && clickAudioRef.current.paused) {
+      clickAudioRef.current.load(); // help initialize audio on user interaction
     }
   };
 
@@ -60,8 +72,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const playClick = () => {
+    if (!isSoundEnabled || !clickAudioRef.current) return;
+    try {
+      clickAudioRef.current.currentTime = 0;
+      clickAudioRef.current.play().catch(e => console.error("Audio play failed:", e));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('button, a, select, [role="button"], .cursor-none, [tabindex]')) {
+        playClick();
+      }
+    };
+    
+    document.addEventListener('click', handleGlobalClick, true);
+    return () => document.removeEventListener('click', handleGlobalClick, true);
+  }, [isSoundEnabled]);
+
   return (
-    <AppContext.Provider value={{ isSoundEnabled, toggleSound, playHover, cursorVariant, setCursorVariant }}>
+    <AppContext.Provider value={{ isSoundEnabled, toggleSound, playHover, playClick, cursorVariant, setCursorVariant }}>
       {children}
     </AppContext.Provider>
   );

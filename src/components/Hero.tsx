@@ -93,6 +93,14 @@ export default function Hero({ onJoinWaitlist }: { onJoinWaitlist: () => void })
   const [showVideo, setShowVideo] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
 
+  const bgVideoRef = useRef<HTMLVideoElement>(null);
+  const modalVideoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (bgVideoRef.current) bgVideoRef.current.muted = !isSoundEnabled;
+    if (modalVideoRef.current) modalVideoRef.current.muted = !isSoundEnabled;
+  }, [isSoundEnabled]);
+
   useEffect(() => {
     if (isMenuOpen && typeof window !== 'undefined' && window.innerWidth < 1024) {
       document.body.style.overflow = 'hidden';
@@ -148,10 +156,11 @@ export default function Hero({ onJoinWaitlist }: { onJoinWaitlist: () => void })
       {/* Background Image / Video with Parallax */}
       <motion.div className="absolute inset-0 z-0 origin-top" style={{ y: yBg, scale: 1.15 }}>
         <video 
+          ref={bgVideoRef}
           src={assets.videos.heroBackground}
           autoPlay 
           loop 
-          muted 
+          muted={!isSoundEnabled}
           playsInline
           className="w-full h-full object-cover opacity-50 grayscale hover:grayscale-0 transition-all duration-[3000ms]"
         />
@@ -365,9 +374,12 @@ export default function Hero({ onJoinWaitlist }: { onJoinWaitlist: () => void })
                  onClick={(e) => e.stopPropagation()}
               >
                   <video 
+                     ref={modalVideoRef}
                      src={assets.videos.demoVideo}
                      autoPlay 
                      loop
+                     muted={!isSoundEnabled}
+                     playsInline
                      className="w-full h-full object-cover"
                   />
               </motion.div>

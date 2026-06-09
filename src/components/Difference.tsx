@@ -114,23 +114,23 @@ export default function Difference() {
               let opacity = 0;
               let zIndex = 0;
 
-              const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-              const sideOffset = isMobile ? "110%" : "105%";
+              const sideOffset = "105%";
+              const mobileSideOffset = "115%";
 
               if (isCenter) {
                 xPos = "0%";
-                scale = isMobile ? 1 : 1.05;
+                scale = 1;
                 opacity = 1;
                 zIndex = 20;
               } else if (isLeft) {
-                xPos = "-" + sideOffset; 
-                scale = isMobile ? 0.85 : 0.9;
-                opacity = isMobile ? 0.2 : 0.4;
+                xPos = "-105%";
+                scale = 0.85;
+                opacity = 0.2;
                 zIndex = 10;
               } else if (isRight) {
-                xPos = sideOffset;
-                scale = isMobile ? 0.85 : 0.9;
-                opacity = isMobile ? 0.2 : 0.4;
+                xPos = "105%";
+                scale = 0.85;
+                opacity = 0.2;
                 zIndex = 10;
               } else if (offset < -1) {
                 xPos = "-200%";
@@ -157,7 +157,7 @@ export default function Difference() {
                     key={idx}
                     animate={{
                       x: xPos,
-                      scale: scale,
+                      scale: isCenter ? 1.05 : scale, // Slight bump on center
                       opacity: opacity,
                       zIndex: zIndex,
                     }}
@@ -166,8 +166,8 @@ export default function Difference() {
                       clipPath: "polygon(24px 0, 100% 0, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0 100%, 0 24px)",
                       pointerEvents: isVisible ? 'auto' : 'none'
                     }}
-                    className={`absolute w-[90%] sm:w-[60%] md:w-[32%] max-w-[380px] h-full min-h-[360px] p-8 md:p-10 flex flex-col items-start justify-start text-left border-l-[3px] transition-colors duration-500
-                      ${cardBg} ${cardBorder} hover:border-nomad-green relative overflow-hidden group
+                    className={`absolute top-0 bottom-0 left-0 right-0 m-auto w-[85%] sm:w-[60%] md:w-[32%] max-w-[380px] h-[380px] p-6 md:p-8 flex flex-col items-start justify-start text-left border-l-[3px] transition-colors duration-500
+                      ${cardBg} ${cardBorder} hover:border-nomad-green overflow-hidden group
                     `}
                  >
                     {/* Decorative Background Elements */}
