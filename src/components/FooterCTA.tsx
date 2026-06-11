@@ -65,7 +65,8 @@ export default function FooterCTA() {
       return;
     }
 
-    if (import.meta.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && !recaptchaValue) {
+    const recaptchaKey = import.meta.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+    if (recaptchaKey && !recaptchaValue) {
       setStatus('error');
       setErrorMessage('Please verify that you are a human via ReCAPTCHA.');
       return;
@@ -80,33 +81,34 @@ export default function FooterCTA() {
 
       let emailSentStatus = false;
 
-      // Send confirmation email via EmailJS (Free Tier)
-      try {
-        const emailJsServiceId = import.meta.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
-        const emailJsTemplateId = import.meta.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
-        const emailJsPublicKey = import.meta.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+      if (peopleJoined < 200) {
+        // Send confirmation email via EmailJS (Free Tier)
+        try {
+          const emailJsServiceId = import.meta.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+          const emailJsTemplateId = import.meta.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+          const emailJsPublicKey = import.meta.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
 
-        if (emailJsServiceId && emailJsTemplateId && emailJsPublicKey) {
-          const { send } = await import('@emailjs/browser');
-          await send(
-            emailJsServiceId,
-            emailJsTemplateId,
-            {
-              to_name: name,
-              to_email: email,
-              user_role: role,
-              reply_to: "support@nomad.com", // Replace with your support email
-            },
-            emailJsPublicKey
-          );
-          emailSentStatus = true;
-        } else {
-          console.warn("EmailJS credentials are not fully configured in .env");
+          if (emailJsServiceId && emailJsTemplateId && emailJsPublicKey) {
+            const { send } = await import('@emailjs/browser');
+            await send(
+              emailJsServiceId,
+              emailJsTemplateId,
+              {
+                to_name: name,
+                to_email: email,
+                user_role: role,
+                reply_to: "support@nomad.com", // Replace with your support email
+              },
+              emailJsPublicKey
+            );
+            emailSentStatus = true;
+          } else {
+            console.warn("EmailJS credentials are not fully configured in .env");
+          }
+        } catch (emailError) {
+          console.error("Failed to send welcome email (Quota likely exceeded):", emailError);
+          // We still consider the waitlist signup a success even if email fails
         }
-      } catch (emailError) {
-        console.error("Failed to send welcome email (Quota likely exceeded):", emailError);
-        // We still consider the waitlist signup a success even if email fails
-        // The boolean handles the manual "batch" process requirement later
       }
 
       // Add user to waitlist
@@ -118,7 +120,7 @@ export default function FooterCTA() {
         createdAt: serverTimestamp(),
       });
 
-      // If email failed to send (e.g. quota limit), store in a separate collection for manual batching
+      // If email failed to send (e.g. quota limit) or user joined after 200th, store in a separate collection for manual batching
       if (!emailSentStatus) {
         await addDoc(collection(db, 'waitlist_pending_emails'), {
           waitlistId: waitlistDocRef.id,
@@ -181,12 +183,16 @@ export default function FooterCTA() {
                   <motion.li 
                     key={i} 
                     variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } }}
-                    className="flex items-start gap-4 group"
+                    className="group"
                   >
-                    <div className="w-6 h-6 rounded-full border border-nomad-green/30 bg-nomad-green/10 flex items-center justify-center flex-shrink-0 mt-[-2px] group-hover:bg-nomad-green group-hover:border-nomad-green transition-colors">
-                      <div className="w-1.5 h-1.5 bg-nomad-green rounded-full group-hover:bg-[#111] transition-colors" />
+                    <div className="flex items-center gap-4 transition-opacity duration-300 opacity-70 hover:opacity-100">
+                      <div className="relative w-6 h-6 rounded-full border border-nomad-green/30 bg-nomad-green/10 flex items-center justify-center flex-shrink-0 transition-all duration-300 overflow-visible group-hover:bg-nomad-green/20 group-hover:border-nomad-green/50 group-hover:scale-110">
+                        <div className="w-1.5 h-1.5 rounded-full relative z-10 transition-colors duration-300 bg-nomad-green group-hover:bg-white" />
+                      </div>
+                      <span className="transition-colors duration-300 text-white/80 group-hover:text-white">
+                        {benefit}
+                      </span>
                     </div>
-                    <span className="text-white/60 group-hover:text-white transition-colors">{benefit}</span>
                   </motion.li>
                 ))}
               </ul>
@@ -345,9 +351,9 @@ export default function FooterCTA() {
                     </div>
 
                     <div className="relative">
-                      {import.meta.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ? (
+                      {(import.meta.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || import.meta.env.VITE_RECAPTCHA_SITE_KEY) ? (
                         <ReCAPTCHA
-                          sitekey={import.meta.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+                          sitekey={import.meta.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || import.meta.env.VITE_RECAPTCHA_SITE_KEY}
                           onChange={(value) => setRecaptchaValue(value)}
                           theme="dark"
                         />

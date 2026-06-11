@@ -5,7 +5,7 @@ import WorldMap from './WorldMap';
 
 export default function SocialProof() {
   return (
-    <section className="py-24 md:py-32 bg-[#111] text-nomad-ivory overflow-x-clip relative border-b border-nomad-charcoal/10">
+    <section className="py-24 md:py-32 bg-nomad-charcoal text-nomad-ivory overflow-x-clip relative border-b border-nomad-charcoal/10">
       
       {/* Cross out lines section container */}
       <div className="relative w-full flex flex-col items-center justify-center pt-16 mb-12 md:mb-16">

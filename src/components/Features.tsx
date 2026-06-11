@@ -72,7 +72,7 @@ export default function Features() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      className="py-24 bg-[#0a0a0a] text-nomad-ivory relative overflow-hidden"
+      className="py-24 bg-nomad-charcoal text-nomad-ivory relative overflow-hidden"
     >
       {/* Background glow */}
       <motion.div 
@@ -101,8 +101,8 @@ export default function Features() {
 
         <div 
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-6xl w-full"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          onPointerEnter={(e) => { if (e.pointerType === 'mouse') setIsHovered(true); }}
+          onPointerLeave={(e) => { if (e.pointerType === 'mouse') setIsHovered(false); }}
         >
           {features.map((feature, idx) => {
             const isActive = activeTicket === idx;
@@ -116,19 +116,27 @@ export default function Features() {
                   {/* Outer Ticket Container */}
                   <div 
                     className={`relative flex w-full h-full bg-[#2a2a2a] rounded-xl overflow-hidden shadow-2xl transition-all duration-500 group-hover:-translate-y-1 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-px before:border-l-[3px] before:border-dotted before:border-[#1a1a1a]/80 before:z-10 after:absolute after:right-[58px] after:top-2 after:bottom-2 after:w-px after:border-r-[3px] after:border-dotted after:border-[#1a1a1a]/80 after:z-10 ${isActive ? '-translate-y-1' : ''}`}
-                    onMouseEnter={() => {
-                      playHover();
-                      setCursorVariant('hover');
-                      setActiveTicket(idx);
+                    onPointerEnter={(e) => {
+                      if (e.pointerType === 'mouse') {
+                        playHover();
+                        setCursorVariant('hover');
+                        setActiveTicket(idx);
+                      }
                     }}
-                    onMouseLeave={() => setCursorVariant('default')}
+                    onPointerLeave={(e) => {
+                       if (e.pointerType === 'mouse') setCursorVariant('default');
+                    }}
+                    onClick={() => {
+                       // allow tap on mobile to set active ticket
+                       setActiveTicket(idx);
+                    }}
                   >
                      
                      {/* Left Cutout */}
-                     <div className={`absolute top-1/2 -left-4 w-8 h-8 bg-[#0a0a0a] rounded-full -translate-y-1/2 z-20 transition-colors duration-500 ${isActive ? 'border-r border-nomad-green/50' : ''}`} />
+                     <div className="absolute top-1/2 -left-4 w-8 h-8 bg-nomad-charcoal rounded-full -translate-y-1/2 z-20 transition-colors duration-500" />
                      
                      {/* Right Cutout */}
-                     <div className={`absolute top-1/2 -right-4 w-8 h-8 bg-[#0a0a0a] rounded-full -translate-y-1/2 z-20 transition-colors duration-500 ${isActive ? 'border-l border-nomad-green/50' : ''}`} />
+                     <div className="absolute top-1/2 -right-4 w-8 h-8 bg-nomad-charcoal rounded-full -translate-y-1/2 z-20 transition-colors duration-500" />
 
                      {/* Content Area */}
                    <div className="flex-1 p-6 md:p-8 flex flex-col justify-between relative z-10 w-full overflow-hidden">

@@ -1,10 +1,13 @@
 import { motion } from 'motion/react';
 import { MapPin } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 export default function Footer() {
+  const location = useLocation();
+  const isHome = location.pathname === '/';
+
   return (
-    <footer className="bg-[#111] text-nomad-ivory py-16 border-t border-white/5 relative z-10 pb-32 sm:pb-16">
+    <footer className={`text-nomad-ivory py-16 relative z-10 pb-32 sm:pb-16 ${isHome ? 'bg-gradient-to-b from-nomad-green/20 to-nomad-charcoal/20' : 'bg-[#111] border-t border-white/5'}`}>
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col items-center justify-center gap-8 mb-12">
           <div className="flex items-center justify-center gap-2 text-nomad-green hover:opacity-80 transition-opacity cursor-pointer">

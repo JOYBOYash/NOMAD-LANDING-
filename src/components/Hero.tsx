@@ -16,10 +16,26 @@ const CountdownBadge = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 0.2 }}
-      className="inline-flex items-center gap-2 text-xs md:text-sm font-mono tracking-widest text-nomad-green/80 bg-nomad-green/10 px-4 py-2 border border-nomad-green/30 rounded-full mb-8 lg:mb-12 z-10 backdrop-blur-sm"
+      className="inline-flex items-center mb-8 lg:mb-12 z-10"
     >
-      <span className="w-2 h-2 rounded-full bg-nomad-green animate-pulse"></span>
-      T-MINUS {days.toString().padStart(2, '0')}:{hours.toString().padStart(2, '0')}:{minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}
+      <div className="flex items-center gap-3 bg-black/40 backdrop-blur-xl px-4 py-2 md:px-5 md:py-2.5 rounded-full border border-white/10 shadow-[0_0_30px_rgba(34,197,94,0.1)]">
+        <span className="relative flex h-2.5 w-2.5">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-nomad-green opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-nomad-green"></span>
+        </span>
+        <span className="text-white/60 uppercase tracking-[0.2em] text-[10px] md:text-xs font-bold font-sans">
+          Live to the world in
+        </span>
+        <div className="flex items-center gap-1 font-mono tracking-wider text-xs md:text-sm font-bold">
+            <span className="bg-white/5 border border-white/10 px-1.5 md:px-2 py-1 rounded text-white">{days.toString().padStart(2, '0')}</span>
+            <span className="text-white/30 px-0.5">:</span>
+            <span className="bg-white/5 border border-white/10 px-1.5 md:px-2 py-1 rounded text-white">{hours.toString().padStart(2, '0')}</span>
+            <span className="text-white/30 px-0.5">:</span>
+            <span className="bg-white/5 border border-white/10 px-1.5 md:px-2 py-1 rounded text-white">{minutes.toString().padStart(2, '0')}</span>
+            <span className="text-white/30 px-0.5">:</span>
+            <span className="bg-nomad-green/10 border border-nomad-green/30 px-1.5 md:px-2 py-1 rounded text-nomad-green">{seconds.toString().padStart(2, '0')}</span>
+        </div>
+      </div>
     </motion.div>
   );
 };
@@ -269,10 +285,10 @@ export default function Hero({ onJoinWaitlist }: { onJoinWaitlist: () => void })
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                className="relative inline-flex flex-col items-center justify-center z-10"
+                className="relative inline-flex flex-col items-center justify-center z-10 w-full px-4"
               >
                 <CountdownBadge />
-                <h1 className="relative inline-block text-[17vw] md:text-[12vw] lg:text-[140px] xl:text-[170px] leading-[0.75] font-black font-display uppercase tracking-[-0.02em] text-white">
+                <h1 className="relative inline-block text-[13.5vw] md:text-[12vw] lg:text-[140px] xl:text-[170px] leading-[0.75] font-black font-display uppercase tracking-[-0.02em] text-white">
                   EVENTS
                   <motion.div 
                     initial={{ scaleX: 0 }}
@@ -288,7 +304,7 @@ export default function Hero({ onJoinWaitlist }: { onJoinWaitlist: () => void })
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-                className="relative z-10 font-black font-display uppercase tracking-[-0.02em] text-[17vw] md:text-[12vw] lg:text-[140px] xl:text-[170px] leading-[0.75] flex justify-center mt-2 md:mt-4"
+                className="relative z-10 w-full px-4 font-black font-display uppercase tracking-[-0.02em] text-[13.5vw] md:text-[12vw] lg:text-[140px] xl:text-[170px] leading-[0.75] flex justify-center mt-2 md:mt-4"
               >
                 {/* SVG text wrapper to allow exact stroke-linejoin styling and fix the 'P' spike artifact */}
                 <span className="opacity-0">EPICS</span>

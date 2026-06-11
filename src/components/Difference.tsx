@@ -49,7 +49,7 @@ export default function Difference() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      className="py-24 md:py-32 bg-[#171717] text-white"
+      className="py-24 md:py-32 bg-nomad-charcoal text-white"
     >
       <motion.div 
         variants={{

@@ -60,12 +60,13 @@ export default function Timeline() {
   ];
 
   return (
-    <section className="py-24 bg-[#0a0a0a] text-nomad-ivory relative border-b border-white/5 overflow-hidden">
+    <section className="py-24 bg-nomad-charcoal text-nomad-ivory relative border-b border-white/5 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="mb-16 text-center">
+        <div className="mb-16 text-center px-4">
           <h2 className="text-sm font-bold uppercase tracking-widest text-[#FFD700] mb-4">The Roadmap</h2>
-          <h3 className="text-4xl md:text-5xl font-display font-black uppercase tracking-tighter text-white mb-6">
-            Countdown to <span className="text-nomad-green">Launch</span>
+          <h3 className="text-2xl sm:text-4xl md:text-5xl font-display font-black uppercase tracking-tighter text-white mb-6 leading-none">
+            Countdown to <br className="sm:hidden" />
+            <span className="text-nomad-green">Launch</span>
           </h3>
         </div>
 

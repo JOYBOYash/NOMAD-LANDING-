@@ -14,7 +14,7 @@ const markers = [
 
 export default function WorldMap() {
   return (
-    <div className="relative w-[100vw] left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] h-[500px] md:h-[800px] overflow-hidden mb-12 flex flex-col md:flex-row items-center border-t border-b border-white/5 bg-[#111]">
+    <div className="relative w-[100vw] left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] h-[500px] md:h-[800px] overflow-hidden mb-12 flex flex-col md:flex-row items-center border-t border-b border-white/5 bg-transparent">
       
       {/* Absolute Header Content */}
       <div className="absolute top-0 left-4 md:left-12 lg:left-24 z-10 pointer-events-none max-w-2xl px-4 md:px-0">

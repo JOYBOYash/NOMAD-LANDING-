@@ -50,8 +50,8 @@ export default function HowItWorks() {
 
         <div 
           className="w-full flex flex-col relative"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          onPointerEnter={(e) => { if (e.pointerType === 'mouse') setIsHovered(true); }}
+          onPointerLeave={(e) => { if (e.pointerType === 'mouse') setIsHovered(false); }}
         >
           {steps.map((step, i) => {
             const isActive = activeStep === i;

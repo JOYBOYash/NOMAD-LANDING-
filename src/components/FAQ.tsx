@@ -51,7 +51,7 @@ export default function FAQ() {
   }, [isHovered]);
 
   return (
-    <section className="py-24 md:py-32 bg-[#111] text-nomad-ivory overflow-hidden relative border-b border-white/5">
+    <section className="py-24 md:py-32 bg-nomad-charcoal text-nomad-ivory overflow-hidden relative border-b border-white/5">
       <motion.div 
         variants={{
           hidden: { opacity: 0, y: 80 },
