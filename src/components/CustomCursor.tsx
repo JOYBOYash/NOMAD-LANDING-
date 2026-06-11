@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useSpring } from 'motion/react';
 import { useAppContext } from '../context/AppContext';
 
 export default function CustomCursor() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isTouchInfo, setIsTouchInfo] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const { cursorVariant } = useAppContext();
+
+  const cursorX = useSpring(0, { stiffness: 500, damping: 28, mass: 0.5 });
+  const cursorY = useSpring(0, { stiffness: 500, damping: 28, mass: 0.5 });
 
   useEffect(() => {
     const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
@@ -18,13 +20,14 @@ export default function CustomCursor() {
     document.head.appendChild(style);
 
     const updateMousePosition = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      cursorX.set(e.clientX);
+      cursorY.set(e.clientY);
     };
 
     const handleMouseEnter = () => setIsVisible(true);
     const handleMouseLeave = () => setIsVisible(false);
 
-    window.addEventListener('mousemove', updateMousePosition);
+    window.addEventListener('mousemove', updateMousePosition, { passive: true });
     document.body.addEventListener('mouseenter', handleMouseEnter);
     document.body.addEventListener('mouseleave', handleMouseLeave);
     setIsVisible(true);
@@ -35,14 +38,14 @@ export default function CustomCursor() {
       document.body.removeEventListener('mouseenter', handleMouseEnter);
       document.body.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, []);
+  }, [cursorX, cursorY]);
 
   if (isTouchInfo || !isVisible) return null;
 
   const variants = {
     default: {
-      x: mousePosition.x - 6,
-      y: mousePosition.y - 6,
+      x: "-50%",
+      y: "-50%",
       width: 12,
       height: 12,
       backgroundColor: "#22c55e",
@@ -51,8 +54,8 @@ export default function CustomCursor() {
       border: "1px solid #22c55e",
     },
     hover: {
-      x: mousePosition.x - 12,
-      y: mousePosition.y - 12,
+      x: "-50%",
+      y: "-50%",
       width: 24,
       height: 24,
       backgroundColor: "transparent",
@@ -61,8 +64,8 @@ export default function CustomCursor() {
       border: "2px solid #22c55e",
     },
     waitlist: {
-      x: mousePosition.x - 30,
-      y: mousePosition.y - 30,
+      x: "-50%",
+      y: "-50%",
       width: 60,
       height: 60,
       backgroundColor: "rgba(34, 197, 94, 0.2)",
@@ -75,22 +78,27 @@ export default function CustomCursor() {
   return (
     <motion.div
       className="fixed top-0 left-0 pointer-events-none z-[9999] flex items-center justify-center mix-blend-screen"
-      animate={cursorVariant}
-      variants={variants}
-      transition={{ type: "spring", stiffness: 500, damping: 28, mass: 0.5 }}
+      style={{ x: cursorX, y: cursorY }}
     >
-      <AnimatePresence>
-        {cursorVariant === 'waitlist' && (
-          <motion.span 
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1, rotate: 45 }}
-            exit={{ opacity: 0, scale: 0.5 }}
-            className="text-[10px] font-bold text-nomad-green uppercase tracking-widest leading-none drop-shadow-[0_0_5px_rgba(34,197,94,0.8)]"
-          >
-            Join
-          </motion.span>
-        )}
-      </AnimatePresence>
+      <motion.div
+        animate={cursorVariant}
+        variants={variants}
+        transition={{ type: "spring", stiffness: 500, damping: 28, mass: 0.5 }}
+        className="flex items-center justify-center"
+      >
+        <AnimatePresence>
+          {cursorVariant === 'waitlist' && (
+            <motion.span 
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1, rotate: 45 }}
+              exit={{ opacity: 0, scale: 0.5 }}
+              className="text-[10px] font-bold text-nomad-green uppercase tracking-widest leading-none drop-shadow-[0_0_5px_rgba(34,197,94,0.8)]"
+            >
+              Join
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </motion.div>
   );
 }

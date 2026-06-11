@@ -27,9 +27,39 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const initAudio = () => {
     if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
-      audioCtxRef.current.resume();
+      audioCtxRef.current.resume().catch(console.error);
     }
   };
+
+  useEffect(() => {
+    const unlockAudio = () => {
+       if (audioCtxRef.current) {
+         if (audioCtxRef.current.state === 'suspended') {
+           audioCtxRef.current.resume();
+         }
+         const osc = audioCtxRef.current.createOscillator();
+         const gain = audioCtxRef.current.createGain();
+         gain.gain.value = 0;
+         osc.connect(gain);
+         gain.connect(audioCtxRef.current.destination);
+         osc.start(audioCtxRef.current.currentTime);
+         osc.stop(audioCtxRef.current.currentTime + 0.001);
+       }
+       document.removeEventListener('touchstart', unlockAudio, true);
+       document.removeEventListener('pointerdown', unlockAudio, true);
+       document.removeEventListener('click', unlockAudio, true);
+    };
+
+    document.addEventListener('touchstart', unlockAudio, true);
+    document.addEventListener('pointerdown', unlockAudio, true);
+    document.addEventListener('click', unlockAudio, true);
+
+    return () => {
+       document.removeEventListener('touchstart', unlockAudio, true);
+       document.removeEventListener('pointerdown', unlockAudio, true);
+       document.removeEventListener('click', unlockAudio, true);
+    };
+  }, []);
 
   const toggleSound = () => {
     setIsSoundEnabled(prev => {
@@ -59,7 +89,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       osc.connect(gainNode);
       gainNode.connect(ctx.destination);
       
-      osc.start();
+      osc.start(ctx.currentTime);
       osc.stop(ctx.currentTime + 0.1);
     } catch(e) {
       console.error(e);
@@ -76,32 +106,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const gainNode = ctx.createGain();
       
       oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(600, ctx.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.05);
+      oscillator.frequency.setValueAtTime(800, ctx.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.03);
       
       gainNode.gain.setValueAtTime(1, ctx.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.03);
       
       oscillator.connect(gainNode);
       gainNode.connect(ctx.destination);
       
       oscillator.start(ctx.currentTime);
-      oscillator.stop(ctx.currentTime + 0.05);
+      oscillator.stop(ctx.currentTime + 0.03);
     } catch (e) {
       console.error(e);
     }
   };
 
   useEffect(() => {
-    const handleGlobalClick = (e: MouseEvent) => {
+    const handleGlobalTrigger = (e: Event) => {
       const target = e.target as HTMLElement;
       if (target.closest('button, a, select, [role="button"], .cursor-none, [tabindex]')) {
         playClick();
       }
     };
     
-    document.addEventListener('click', handleGlobalClick, true);
-    return () => document.removeEventListener('click', handleGlobalClick, true);
+    // Use capture phase for immediate response
+    document.addEventListener('pointerdown', handleGlobalTrigger, true);
+    return () => {
+      document.removeEventListener('pointerdown', handleGlobalTrigger, true);
+    };
   }, [isSoundEnabled]);
 
   return (

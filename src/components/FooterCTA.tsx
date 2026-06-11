@@ -83,62 +83,36 @@ export default function FooterCTA() {
 
       // Check if email already exists using document ID
       const waitlistDocRef = doc(db, 'waitlist', formattedEmail);
-      const docSnap = await getDoc(waitlistDocRef);
       
-      if (docSnap.exists()) {
-        setStatus('error');
-        setErrorMessage('This email is already registered on the waitlist.');
-        return;
-      }
-
-      let emailSentStatus = false;
-
-      // Send confirmation email via EmailJS
       try {
-        const emailJsServiceId = import.meta.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || import.meta.env.VITE_EMAILJS_SERVICE_ID || "service_0kza3o8";
-        const emailJsTemplateId = import.meta.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "template_exe20rw";
-        const emailJsPublicKey = import.meta.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || import.meta.env.VITE_EMAILJS_PUBLIC_KEY || "bp8cytYGh7kJfv0DQ";
-
-        if (emailJsServiceId && emailJsTemplateId && emailJsPublicKey) {
-          const { send } = await import('@emailjs/browser');
-          await send(
-            emailJsServiceId,
-            emailJsTemplateId,
-            {
-              to_name: name,
-              to_email: formattedEmail,
-              user_role: role,
-              reply_to: "support@nomad.com", // Replace with your support email
-            },
-            emailJsPublicKey
-          );
-          emailSentStatus = true;
-        } else {
-          console.warn("EmailJS credentials are not fully configured in .env");
-        }
-      } catch (emailError) {
-        console.error("Failed to send welcome email:", emailError);
-        // If email fails but we still want to log the user as 'not sent'
-      }
-
-      // Add user to waitlist
-      await setDoc(waitlistDocRef, {
-        name,
-        email: formattedEmail,
-        role,
-        emailSent: emailSentStatus,
-        createdAt: serverTimestamp(),
-      });
-
-      // If email failed to send (e.g. quota limit) or user joined after 200th, store in a separate collection for manual batching
-      if (!emailSentStatus) {
-        await setDoc(doc(db, 'waitlist_pending_emails', formattedEmail), {
-          waitlistId: formattedEmail,
+        await setDoc(waitlistDocRef, {
           name,
           email: formattedEmail,
           role,
           createdAt: serverTimestamp(),
         });
+
+        // Call our backend API to send the confirmation email
+        try {
+          const res = await fetch('/api/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email: formattedEmail, role })
+          });
+          if (!res.ok) {
+            console.warn("Failed to send welcome email via API");
+          }
+        } catch (emailErr) {
+          console.error("Email API failed", emailErr);
+        }
+      } catch (docError: any) {
+        if (docError.code === 'permission-denied') {
+          // If update fails because they already exist
+          setStatus('error');
+          setErrorMessage('This email is already registered on the waitlist.');
+          return;
+        }
+        throw docError;
       }
 
       // Increment global counter securely via transaction

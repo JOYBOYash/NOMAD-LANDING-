@@ -9,6 +9,12 @@ service cloud.firestore {
       allow update, delete: if request.auth != null;
     }
 
+    // Allow anyone to trigger emails via Firebase Trigger Email Extension
+    match /mail/{documentId} {
+      allow create: if true;
+      allow read, update, delete: if request.auth != null;
+    }
+
     // Allow anyone to store pending emails if sending fails
     match /waitlist_pending_emails/{documentId} {
       allow create: if true;
