@@ -4,6 +4,7 @@ import { FormEvent, useState, useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp, doc, onSnapshot, runTransaction } from 'firebase/firestore';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 export default function FooterCTA() {
   const [name, setName] = useState('');
@@ -12,6 +13,7 @@ export default function FooterCTA() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [recaptchaValue, setRecaptchaValue] = useState<string | null>(null);
   const { setCursorVariant } = useAppContext();
 
   const [peopleJoined, setPeopleJoined] = useState(0);
@@ -63,6 +65,12 @@ export default function FooterCTA() {
       return;
     }
 
+    if (import.meta.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && !recaptchaValue) {
+      setStatus('error');
+      setErrorMessage('Please verify that you are a human via ReCAPTCHA.');
+      return;
+    }
+
     setStatus('loading');
     
     try {
@@ -70,13 +78,56 @@ export default function FooterCTA() {
         throw new Error("Firebase is not connected. Please add your config in .env");
       }
 
+      let emailSentStatus = false;
+
+      // Send confirmation email via EmailJS (Free Tier)
+      try {
+        const emailJsServiceId = import.meta.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+        const emailJsTemplateId = import.meta.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+        const emailJsPublicKey = import.meta.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+
+        if (emailJsServiceId && emailJsTemplateId && emailJsPublicKey) {
+          const { send } = await import('@emailjs/browser');
+          await send(
+            emailJsServiceId,
+            emailJsTemplateId,
+            {
+              to_name: name,
+              to_email: email,
+              user_role: role,
+              reply_to: "support@nomad.com", // Replace with your support email
+            },
+            emailJsPublicKey
+          );
+          emailSentStatus = true;
+        } else {
+          console.warn("EmailJS credentials are not fully configured in .env");
+        }
+      } catch (emailError) {
+        console.error("Failed to send welcome email (Quota likely exceeded):", emailError);
+        // We still consider the waitlist signup a success even if email fails
+        // The boolean handles the manual "batch" process requirement later
+      }
+
       // Add user to waitlist
-      await addDoc(collection(db, 'waitlist'), {
+      const waitlistDocRef = await addDoc(collection(db, 'waitlist'), {
         name,
         email,
         role,
+        emailSent: emailSentStatus,
         createdAt: serverTimestamp(),
       });
+
+      // If email failed to send (e.g. quota limit), store in a separate collection for manual batching
+      if (!emailSentStatus) {
+        await addDoc(collection(db, 'waitlist_pending_emails'), {
+          waitlistId: waitlistDocRef.id,
+          name,
+          email,
+          role,
+          createdAt: serverTimestamp(),
+        });
+      }
 
       // Increment global counter securely via transaction
       const statRef = doc(db, 'stats', 'waitlist');
@@ -186,7 +237,7 @@ export default function FooterCTA() {
                 >
                   <CheckCircle className="w-16 h-16 text-nomad-green mx-auto mb-6 drop-shadow-[0_0_15px_rgba(34,197,94,0.5)]" />
                   <h3 className="text-2xl font-black text-white uppercase tracking-widest mb-3">Priority Secured</h3>
-                  <p className="text-white/60 font-medium font-mono text-sm uppercase">Access code will be emailed.</p>
+                  <p className="text-white/60 font-medium font-mono text-sm uppercase">Confirmation email sent. We'll reach out as release approaches.</p>
                 </motion.div>
               ) : (
                 <form onSubmit={handleJoin} className="w-full flex flex-col gap-8">
@@ -291,6 +342,18 @@ export default function FooterCTA() {
                           )}
                         </AnimatePresence>
                       </div>
+                    </div>
+
+                    <div className="relative">
+                      {import.meta.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ? (
+                        <ReCAPTCHA
+                          sitekey={import.meta.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+                          onChange={(value) => setRecaptchaValue(value)}
+                          theme="dark"
+                        />
+                      ) : (
+                        <p className="text-xs font-mono text-yellow-500 uppercase tracking-widest mt-2">ReCAPTCHA configuring...</p>
+                      )}
                     </div>
 
                     <motion.button 

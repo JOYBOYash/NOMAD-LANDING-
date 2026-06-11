@@ -31,11 +31,17 @@ export default function Problem() {
   ];
 
   return (
-    <section className="py-24 md:py-32 bg-nomad-charcoal text-nomad-ivory overflow-hidden relative border-b border-white/5">
+    <motion.section 
+      initial={{ opacity: 0, y: 100 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="py-24 md:py-32 bg-nomad-charcoal text-nomad-ivory overflow-hidden relative border-b border-white/5"
+    >
       <motion.div 
         variants={{
-          hidden: { opacity: 0, y: 80 },
-          show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.2 } }
+          hidden: { opacity: 0 },
+          show: { opacity: 1, transition: { staggerChildren: 0.2 } }
         }}
         initial="hidden"
         whileInView="show"
@@ -137,6 +143,6 @@ export default function Problem() {
 
         </div>
       </motion.div>
-    </section>
+    </motion.section>
   );
 }

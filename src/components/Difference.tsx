@@ -44,11 +44,17 @@ export default function Difference() {
   const prevPage = () => setCenterIndex((prev) => (prev - 1 + differenceCards.length) % differenceCards.length);
 
   return (
-    <section className="py-24 md:py-32 bg-[#171717] text-white">
+    <motion.section 
+      initial={{ opacity: 0, y: 100 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="py-24 md:py-32 bg-[#171717] text-white"
+    >
       <motion.div 
         variants={{
-          hidden: { opacity: 0, y: 80 },
-          show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut", staggerChildren: 0.2 } }
+          hidden: { opacity: 0 },
+          show: { opacity: 1, transition: { staggerChildren: 0.2 } }
         }}
         initial="hidden"
         whileInView="show"
@@ -62,7 +68,7 @@ export default function Difference() {
              variants={{ hidden: { opacity: 0, x: -30 }, show: { opacity: 1, x: 0, transition: { duration: 0.6 } } }}
              className="max-w-2xl w-full"
           >
-            <h2 className="text-[32px] sm:text-[40px] md:text-[60px] lg:text-[70px] font-black font-display uppercase leading-[0.9] tracking-[-0.03em] text-white mb-6">
+            <h2 className="text-[28px] max-w-full overflow-hidden text-ellipsis sm:text-[40px] md:text-[60px] lg:text-[70px] font-black font-display uppercase leading-[0.9] tracking-[-0.03em] text-white mb-6 break-words">
               THE NOMAD <br className="hidden md:block"/> DIFFERENCE.
             </h2>
             <p className="text-base md:text-[17px] text-[#9ca3af] font-medium leading-relaxed max-w-[420px]">
@@ -201,6 +207,6 @@ export default function Difference() {
            })}
         </div>
       </motion.div>
-    </section>
+    </motion.section>
   );
 }

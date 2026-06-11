@@ -119,7 +119,7 @@ export default function SocialProof() {
                  <Users size={280} />
               </div>
 
-              <div className="relative z-10 max-w-sm mt-8">
+              <div className="relative z-10 max-w-sm mt-12 md:mt-8">
                  <h3 className="text-[28px] md:text-[36px] font-black font-display uppercase tracking-tight text-white leading-[1.1] mb-6 group-hover:text-nomad-green transition-colors duration-500">
                    SQUAD UP. <br/> NEVER WANDER ALONE.
                  </h3>
@@ -144,7 +144,7 @@ export default function SocialProof() {
                  <Target size={280} />
               </div>
 
-              <div className="relative z-10 max-w-sm mt-8">
+              <div className="relative z-10 max-w-sm mt-12 md:mt-8">
                  <h3 className="text-[28px] md:text-[36px] font-black font-display uppercase tracking-tight text-white leading-[1.1] mb-6 group-hover:text-nomad-green transition-colors">
                    CO-OP <br/> MISSIONS
                  </h3>
@@ -167,7 +167,7 @@ export default function SocialProof() {
                  <Briefcase size={250} />
               </div>
 
-              <div className="relative z-10 mt-8">
+              <div className="relative z-10 mt-12 md:mt-8">
                  <h3 className="text-[22px] md:text-[26px] font-black font-display uppercase tracking-tight text-white leading-[1.15] mb-5 group-hover:text-nomad-green transition-colors">
                    THE PROFESSIONAL <br/> FLEX
                  </h3>
@@ -190,7 +190,7 @@ export default function SocialProof() {
                  <Megaphone size={250} />
               </div>
 
-              <div className="relative z-10 mt-8">
+              <div className="relative z-10 mt-12 md:mt-8">
                  <h3 className="text-[22px] md:text-[26px] font-black font-display uppercase tracking-tight text-white leading-[1.15] mb-5 group-hover:text-nomad-green transition-colors">
                    THE CREATOR <br/> ELITE
                  </h3>
@@ -213,7 +213,7 @@ export default function SocialProof() {
                  <Globe size={250} />
               </div>
 
-              <div className="relative z-10 mt-8">
+              <div className="relative z-10 mt-12 md:mt-8">
                  <h3 className="text-[22px] md:text-[26px] font-black font-display uppercase tracking-tight text-white leading-[1.15] mb-5 group-hover:text-nomad-green transition-colors">
                    A THRIVING <br/> ECOSYSTEM
                  </h3>

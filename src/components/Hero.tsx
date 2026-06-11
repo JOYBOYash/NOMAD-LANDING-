@@ -1,11 +1,28 @@
 /**
  * Default empty export
  */
+import { createPortal } from 'react-dom';
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import { ArrowDown, Play, Menu, X, Volume2, VolumeX } from 'lucide-react';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 import assets from '../config/assets.json';
+import { useCountdown } from './Countdown';
+
+const CountdownBadge = () => {
+  const { days, hours, minutes, seconds } = useCountdown();
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay: 0.2 }}
+      className="inline-flex items-center gap-2 text-xs md:text-sm font-mono tracking-widest text-nomad-green/80 bg-nomad-green/10 px-4 py-2 border border-nomad-green/30 rounded-full mb-8 lg:mb-12 z-10 backdrop-blur-sm"
+    >
+      <span className="w-2 h-2 rounded-full bg-nomad-green animate-pulse"></span>
+      T-MINUS {days.toString().padStart(2, '0')}:{hours.toString().padStart(2, '0')}:{minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}
+    </motion.div>
+  );
+};
 
 function scrollToSection(id: string) {
   const el = document.getElementById(id);
@@ -102,15 +119,24 @@ export default function Hero({ onJoinWaitlist }: { onJoinWaitlist: () => void })
   }, [isSoundEnabled]);
 
   useEffect(() => {
-    if (isMenuOpen && typeof window !== 'undefined' && window.innerWidth < 1024) {
+    if ((isMenuOpen && typeof window !== 'undefined' && window.innerWidth < 1024) || showVideo) {
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      // @ts-ignore
+      if (window.lenis) window.lenis.stop();
     } else {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      // @ts-ignore
+      if (window.lenis) window.lenis.start();
     }
     return () => {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      // @ts-ignore
+      if (window.lenis) window.lenis.start();
     };
-  }, [isMenuOpen]);
+  }, [isMenuOpen, showVideo]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -149,6 +175,39 @@ export default function Hero({ onJoinWaitlist }: { onJoinWaitlist: () => void })
     e.preventDefault();
     onJoinWaitlist(); 
   };
+
+  const floatingButtons = (
+    <div className="fixed top-6 right-6 md:top-8 md:right-8 z-[100] flex flex-col gap-3 pointer-events-none">
+        <motion.button
+          onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
+          onMouseEnter={(e) => { e.stopPropagation(); setCursorVariant('hover'); }}
+          onMouseLeave={(e) => { e.stopPropagation(); setCursorVariant('default'); }}
+          className={`w-12 h-12 md:w-14 md:h-14 bg-nomad-green text-nomad-charcoal rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-all duration-300 cursor-none relative z-[100] pointer-events-auto`}
+        >
+          <motion.div animate={{ rotate: isMenuOpen ? 90 : 0 }}>
+             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </motion.div>
+        </motion.button>
+        
+        <AnimatePresence>
+          {isScrolled && (
+             <motion.button
+               initial={{ opacity: 0, scale: 0.8, y: -10 }}
+               animate={{ opacity: 1, scale: 1, y: 0 }}
+               exit={{ opacity: 0, scale: 0.8, y: -10 }}
+               transition={{ duration: 0.2 }}
+               onClick={(e) => { e.stopPropagation(); onJoinWaitlist(); }}
+               onMouseEnter={(e) => { e.stopPropagation(); setCursorVariant('hover'); }}
+               onMouseLeave={(e) => { e.stopPropagation(); setCursorVariant('default'); }}
+               title="Join Waitlist"
+               className="md:hidden w-12 h-12 bg-[#FFD700] text-[#111] rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-all duration-300 cursor-none relative z-[99] pointer-events-auto"
+             >
+                <ArrowDown className="w-5 h-5 -rotate-45" strokeWidth={3} />
+             </motion.button>
+          )}
+        </AnimatePresence>
+      </div>
+  );
 
   return (
     <section ref={containerRef} id="hero-section" className="relative min-h-screen flex flex-col overflow-hidden bg-nomad-charcoal font-sans">
@@ -212,6 +271,7 @@ export default function Hero({ onJoinWaitlist }: { onJoinWaitlist: () => void })
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 className="relative inline-flex flex-col items-center justify-center z-10"
               >
+                <CountdownBadge />
                 <h1 className="relative inline-block text-[17vw] md:text-[12vw] lg:text-[140px] xl:text-[170px] leading-[0.75] font-black font-display uppercase tracking-[-0.02em] text-white">
                   EVENTS
                   <motion.div 
@@ -248,12 +308,12 @@ export default function Hero({ onJoinWaitlist }: { onJoinWaitlist: () => void })
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8, duration: 1 }}
-                className="mt-8 max-w-xl text-nomad-ivory/80 text-sm md:text-base font-medium leading-relaxed drop-shadow-md z-10 px-4 mb-8"
+                className="mt-6 md:mt-8 max-w-xl text-nomad-ivory/80 text-sm md:text-base font-medium leading-relaxed drop-shadow-md z-10 px-4 mb-10 md:mb-12"
               >
                 The ultimate event engagement platform. We help you turn your events into experiences. Ready to create, join and participate in experiences of a lifetime?
               </motion.p>
               
-              <div className="flex flex-col items-center justify-center gap-6 md:gap-10 mt-2 z-20">
+              <div className="flex flex-col items-center justify-center gap-8 md:gap-12 mt-2 z-20">
                 {/* Watch Reel Button */}
                 <motion.button
                   initial={{ opacity: 0, y: 20 }}
@@ -262,12 +322,14 @@ export default function Hero({ onJoinWaitlist }: { onJoinWaitlist: () => void })
                   onClick={() => setShowVideo(true)}
                   onMouseEnter={() => setCursorVariant('hover')}
                   onMouseLeave={() => setCursorVariant('default')}
-                  className="group flex flex-col md:flex-row items-center gap-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full px-6 py-3 cursor-none transition-all duration-300 backdrop-blur-sm"
+                  className="group relative flex flex-row items-center backdrop-blur-md bg-[#111]/40 hover:bg-nomad-green border border-white/10 hover:border-nomad-green rounded-full p-2 cursor-none transition-all duration-500 hover:shadow-[0_0_40px_rgba(34,197,94,0.3)] shadow-2xl overflow-hidden w-[340px] md:w-[420px]"
                 >
-                  <div className="w-10 h-10 rounded-full bg-nomad-green flex items-center justify-center text-[#111] group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-                    <Play className="w-4 h-4 ml-0.5" fill="currentColor" />
+                  <div className="absolute left-2 group-hover:left-[calc(100%-3.5rem)] md:group-hover:left-[calc(100%-4rem)] w-12 h-12 md:w-14 md:h-14 rounded-full bg-nomad-green group-hover:bg-[#111] flex items-center justify-center text-[#111] group-hover:text-nomad-green transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] shadow-[0_0_20px_rgba(34,197,94,0.4)] group-hover:shadow-none z-10">
+                    <Play className="w-5 h-5 md:w-6 md:h-6 ml-1" fill="currentColor" />
                   </div>
-                  <span className="text-white text-xs md:text-sm font-black uppercase tracking-widest">Watch App Announcement</span>
+                  <div className="flex-1 flex justify-center items-center h-12 md:h-14 pl-10 pr-2 md:pl-12 md:pr-2 group-hover:pr-10 group-hover:pl-2 md:group-hover:pr-12 md:group-hover:pl-2 transition-all duration-500">
+                    <span className="text-white group-hover:text-[#111] text-[10px] md:text-sm font-black uppercase tracking-[0.1em] md:tracking-[0.15em] transition-colors duration-500 z-0 whitespace-nowrap">Watch App Announcement</span>
+                  </div>
                 </motion.button>
 
                 <div className="relative flex justify-center pb-12 w-full">
@@ -297,12 +359,13 @@ export default function Hero({ onJoinWaitlist }: { onJoinWaitlist: () => void })
       </div>
 
       {/* Floating Hamburger Button */}
-      <div className="fixed top-6 right-6 md:top-8 md:right-8 z-[60] flex flex-col gap-3">
+      {typeof document !== 'undefined' && !showVideo && createPortal(
+      <div className="fixed top-6 right-6 md:top-8 md:right-8 z-[100] flex flex-col gap-3 pointer-events-none">
         <motion.button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          onMouseEnter={() => setCursorVariant('hover')}
-          onMouseLeave={() => setCursorVariant('default')}
-          className={`w-12 h-12 md:w-14 md:h-14 bg-nomad-green text-nomad-charcoal rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-all duration-300 cursor-none relative z-[60]`}
+          onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
+          onMouseEnter={(e) => { e.stopPropagation(); setCursorVariant('hover'); }}
+          onMouseLeave={(e) => { e.stopPropagation(); setCursorVariant('default'); }}
+          className={`w-12 h-12 md:w-14 md:h-14 bg-nomad-green text-nomad-charcoal rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-all duration-300 cursor-none relative z-[100] pointer-events-auto`}
         >
           <motion.div animate={{ rotate: isMenuOpen ? 90 : 0 }}>
              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -316,19 +379,21 @@ export default function Hero({ onJoinWaitlist }: { onJoinWaitlist: () => void })
                animate={{ opacity: 1, scale: 1, y: 0 }}
                exit={{ opacity: 0, scale: 0.8, y: -10 }}
                transition={{ duration: 0.2 }}
-               onClick={() => onJoinWaitlist()}
-               onMouseEnter={() => setCursorVariant('hover')}
-               onMouseLeave={() => setCursorVariant('default')}
+               onClick={(e) => { e.stopPropagation(); onJoinWaitlist(); }}
+               onMouseEnter={(e) => { e.stopPropagation(); setCursorVariant('hover'); }}
+               onMouseLeave={(e) => { e.stopPropagation(); setCursorVariant('default'); }}
                title="Join Waitlist"
-               className="md:hidden w-12 h-12 bg-[#FFD700] text-[#111] rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-all duration-300 cursor-none relative z-[59]"
+               className="md:hidden w-12 h-12 bg-[#FFD700] text-[#111] rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-all duration-300 cursor-none relative z-[99] pointer-events-auto"
              >
                 <ArrowDown className="w-5 h-5 -rotate-45" strokeWidth={3} />
              </motion.button>
           )}
         </AnimatePresence>
       </div>
+      , document.body)}
 
       {/* Fixed Sidebar Menu */}
+      {typeof document !== 'undefined' && createPortal(
       <AnimatePresence>
         {isMenuOpen && (isScrolled || (typeof window !== 'undefined' && window.innerWidth < 1024)) && (
           <motion.div 
@@ -350,15 +415,17 @@ export default function Hero({ onJoinWaitlist }: { onJoinWaitlist: () => void })
           </motion.div>
         )}
       </AnimatePresence>
+      , document.body)}
       
       {/* Video Modal */}
+      {typeof document !== 'undefined' && createPortal(
       <AnimatePresence>
          {showVideo && (
            <motion.div
              initial={{ opacity: 0 }}
              animate={{ opacity: 1 }}
              exit={{ opacity: 0 }}
-             className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 md:p-8 lg:p-12 cursor-none"
+             className="fixed inset-0 z-[120] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 md:p-8 lg:p-12 cursor-none"
              onClick={() => setShowVideo(false)}
              onMouseEnter={() => setCursorVariant('hover')}
              onMouseLeave={() => setCursorVariant('default')}
@@ -386,6 +453,7 @@ export default function Hero({ onJoinWaitlist }: { onJoinWaitlist: () => void })
            </motion.div>
          )}
       </AnimatePresence>
+      , document.body)}
 
       {/* Tilted Marquee Strip */}
       <div className="relative z-20 bg-nomad-green overflow-hidden flex items-center py-4 border-y border-nomad-green shadow-[0_-10px_30px_rgba(34,197,94,0.2)]">

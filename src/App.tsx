@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, useScroll, AnimatePresence } from 'motion/react';
 import Lenis from 'lenis';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 import Hero from './components/Hero';
 import Problem from './components/Problem';
 import Difference from './components/Difference';
@@ -9,6 +10,7 @@ import Features from './components/Features';
 import HowItWorks from './components/HowItWorks';
 import SocialProof from './components/SocialProof';
 import FAQ from './components/FAQ';
+import Timeline from './components/Timeline';
 import FooterCTA from './components/FooterCTA';
 import Footer from './components/Footer';
 import WaitlistModal from './components/WaitlistModal';
@@ -110,6 +112,7 @@ function Home({ scrollToWaitlist }: { scrollToWaitlist: () => void }) {
       <section id="how-it-works"><HowItWorks /></section>
       <section id="wall-of-fame"><SocialProof /></section>
       <section id="faq"><FAQ /></section>
+      <section id="timeline"><Timeline /></section>
       <section id="waitlist"><FooterCTA /></section>
     </main>
   );
@@ -131,16 +134,19 @@ function MainApp() {
   };
 
   useEffect(() => {
-    // Initialize Lenis
+    // Initialize Lenis exactly once
     const lenis = new Lenis({
       duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // https://www.desmos.com/calculator/brs54l4xou
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
       wheelMultiplier: 1,
       touchMultiplier: 2,
     });
+    
+    // @ts-ignore
+    window.lenis = lenis;
 
     function raf(time: number) {
       lenis.raf(time);
@@ -148,10 +154,24 @@ function MainApp() {
     }
     requestAnimationFrame(raf);
 
-    if (isLoading) {
+    return () => {
+      lenis.destroy();
+      // @ts-ignore
+      delete window.lenis;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isLoading || isModalOpen) {
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      // @ts-ignore
+      if (window.lenis) window.lenis.stop();
     } else {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      // @ts-ignore
+      if (window.lenis) window.lenis.start();
     }
     
     const handleMouseLeave = (e: MouseEvent) => {
@@ -166,14 +186,23 @@ function MainApp() {
     }
     
     return () => {
-      lenis.destroy();
       document.removeEventListener('mouseleave', handleMouseLeave);
-      document.body.style.overflow = 'auto';
     };
   }, [userDismissedModal, isModalOpen, isLoading]);
 
   return (
     <div className="min-h-screen bg-nomad-charcoal text-nomad-ivory font-sans selection:bg-nomad-green selection:text-nomad-charcoal">
+      <Helmet>
+        <title>Nomad | The Future of Live Events</title>
+        <meta name="description" content="Join the waitlist for Nomad, the most engaging platform for live events. Early access coming soon." />
+        <meta property="og:title" content="Nomad | The Future of Live Events" />
+        <meta property="og:description" content="Join the waitlist for Nomad, the most engaging platform for live events. Early access coming soon." />
+        <meta property="og:type" content="website" />
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:title" content="Nomad | The Future of Live Events" />
+        <meta property="twitter:description" content="Join the waitlist for Nomad, the most engaging platform for live events. Early access coming soon." />
+      </Helmet>
+      
       <CustomCursor />
       
       <AnimatePresence>
@@ -209,11 +238,13 @@ function MainApp() {
 
 export default function App() {
   return (
-    <AppProvider>
-      <Router>
-        <ScrollToTop />
-        <MainApp />
-      </Router>
-    </AppProvider>
+    <HelmetProvider>
+      <AppProvider>
+        <Router>
+          <ScrollToTop />
+          <MainApp />
+        </Router>
+      </AppProvider>
+    </HelmetProvider>
   );
 }
