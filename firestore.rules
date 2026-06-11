@@ -5,7 +5,8 @@ service cloud.firestore {
     // Landing Page: Allow anyone to create a waitlist entry
     match /waitlist/{documentId} {
       allow create: if true;
-      allow read, update, delete: if request.auth != null;
+      allow read: if true; // Allowed to read to check for duplicates
+      allow update, delete: if request.auth != null;
     }
 
     // Allow anyone to store pending emails if sending fails

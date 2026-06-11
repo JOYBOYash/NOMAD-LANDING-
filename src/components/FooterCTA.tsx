@@ -3,7 +3,7 @@ import { ArrowRight, ChevronDown, CheckCircle, AlertCircle, Users } from 'lucide
 import { FormEvent, useState, useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { db } from '../lib/firebase';
-import { collection, addDoc, serverTimestamp, doc, onSnapshot, runTransaction, query, where, getDocs } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, onSnapshot, runTransaction, getDoc, setDoc } from 'firebase/firestore';
 import ReCAPTCHA from 'react-google-recaptcha';
 
 export default function FooterCTA() {
@@ -81,11 +81,11 @@ export default function FooterCTA() {
 
       const formattedEmail = email.toLowerCase().trim();
 
-      // Check if email already exists
-      const q = query(collection(db, 'waitlist'), where('email', '==', formattedEmail));
-      const querySnapshot = await getDocs(q);
+      // Check if email already exists using document ID
+      const waitlistDocRef = doc(db, 'waitlist', formattedEmail);
+      const docSnap = await getDoc(waitlistDocRef);
       
-      if (!querySnapshot.empty) {
+      if (docSnap.exists()) {
         setStatus('error');
         setErrorMessage('This email is already registered on the waitlist.');
         return;
@@ -122,7 +122,7 @@ export default function FooterCTA() {
       }
 
       // Add user to waitlist
-      const waitlistDocRef = await addDoc(collection(db, 'waitlist'), {
+      await setDoc(waitlistDocRef, {
         name,
         email: formattedEmail,
         role,
@@ -132,8 +132,8 @@ export default function FooterCTA() {
 
       // If email failed to send (e.g. quota limit) or user joined after 200th, store in a separate collection for manual batching
       if (!emailSentStatus) {
-        await addDoc(collection(db, 'waitlist_pending_emails'), {
-          waitlistId: waitlistDocRef.id,
+        await setDoc(doc(db, 'waitlist_pending_emails', formattedEmail), {
+          waitlistId: formattedEmail,
           name,
           email: formattedEmail,
           role,
@@ -175,31 +175,31 @@ export default function FooterCTA() {
          initial="hidden"
          whileInView="show"
          viewport={{ once: true, amount: 0.1 }}
-        className="relative z-10 max-w-7xl mx-auto px-6"
+        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6"
       >
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-center">
           {/* Left Side: Copy & Benefits */}
           <motion.div variants={{ hidden: { opacity: 0, x: -30 }, show: { opacity: 1, x: 0, transition: { duration: 0.6 } } }} className="flex flex-col justify-between h-full">
             <div>
-              <h2 className="text-[40px] md:text-[60px] lg:text-[80px] leading-[0.85] font-black font-display uppercase tracking-[-0.03em] text-white mb-8">
-                DON'T MISS <br /> THE FUTURE OF <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-nomad-green to-emerald-300 drop-shadow-[0_0_20px_rgba(34,197,94,0.3)]">LIVE EVENTS.</span>
+              <h2 className="text-3xl min-[400px]:text-4xl sm:text-5xl md:text-[60px] lg:text-[72px] leading-[0.9] font-black font-display uppercase tracking-tighter text-white mb-6 sm:mb-8 break-words">
+                DON'T MISS <br className="hidden sm:block" /> THE FUTURE OF <br className="hidden sm:block" /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-nomad-green to-emerald-300 drop-shadow-[0_0_20px_rgba(34,197,94,0.3)]">LIVE EVENTS.</span>
               </h2>
-              <p className="max-w-md text-lg text-white/50 mb-12 font-medium leading-relaxed">
+              <p className="max-w-md text-base sm:text-lg text-white/50 mb-12 font-medium leading-relaxed">
                 Join the waitlist today and be among the first to experience the most engaging event platform. Shape the future with us.
               </p>
 
-              <ul className="space-y-5 text-left uppercase tracking-widest text-sm text-white/80 font-bold mb-12">
+              <ul className="space-y-4 sm:space-y-5 text-left uppercase tracking-widest text-xs sm:text-sm text-white/80 font-bold mb-12 flex flex-col items-start">
                 {benefits.map((benefit, i) => (
                   <motion.li 
                     key={i} 
                     variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } }}
                     className="group"
                   >
-                    <div className="flex items-center gap-4 transition-opacity duration-300 opacity-70 hover:opacity-100">
-                      <div className="relative w-6 h-6 rounded-full border border-nomad-green/30 bg-nomad-green/10 flex items-center justify-center flex-shrink-0 transition-all duration-300 overflow-visible group-hover:bg-nomad-green/20 group-hover:border-nomad-green/50 group-hover:scale-110">
+                    <div className="flex items-start sm:items-center gap-3 sm:gap-4 transition-opacity duration-300 opacity-70 hover:opacity-100">
+                      <div className="relative w-5 h-5 sm:w-6 sm:h-6 rounded-full border border-nomad-green/30 bg-nomad-green/10 flex items-center justify-center flex-shrink-0 transition-all duration-300 overflow-visible group-hover:bg-nomad-green/20 group-hover:border-nomad-green/50 mt-0.5 sm:mt-0">
                         <div className="w-1.5 h-1.5 rounded-full relative z-10 transition-colors duration-300 bg-nomad-green group-hover:bg-white" />
                       </div>
-                      <span className="transition-colors duration-300 text-white/80 group-hover:text-white">
+                      <span className="transition-colors duration-300 text-white/80 group-hover:text-white leading-relaxed">
                         {benefit}
                       </span>
                     </div>
@@ -208,12 +208,12 @@ export default function FooterCTA() {
               </ul>
             </div>
 
-            <div className="inline-flex items-center self-start gap-3 bg-[#111] border border-white/10 px-6 py-4 rounded-full mt-auto">
+            <div className="inline-flex items-center self-start gap-3 bg-[#111] border border-white/10 px-4 sm:px-6 py-3 sm:py-4 rounded-full mt-auto">
                <span className="relative flex h-2 w-2">
                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-nomad-green opacity-75"></span>
                  <span className="relative inline-flex rounded-full h-2 w-2 bg-nomad-green"></span>
                </span>
-               <p className="text-xs uppercase tracking-widest text-white/60 font-bold">
+               <p className="text-[10px] sm:text-xs uppercase tracking-widest text-white/60 font-bold">
                  <motion.span 
                    key={peopleJoined}
                    initial={{ opacity: 0, y: -10 }}
@@ -230,7 +230,7 @@ export default function FooterCTA() {
           {/* Right Side: Form */}
           <motion.div 
             variants={{ hidden: { opacity: 0, x: 30 }, show: { opacity: 1, x: 0, transition: { duration: 0.6 } } }}
-            className="bg-transparent border border-white/10 rounded-none p-8 md:p-12 relative group backdrop-blur-sm"
+            className="bg-transparent border border-white/10 rounded-none p-5 sm:p-8 md:p-12 relative group backdrop-blur-sm overflow-hidden sm:overflow-visible"
           >
             {/* Subtle glow effect behind form */}
             <div className="absolute -inset-px bg-gradient-to-b from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
@@ -239,8 +239,8 @@ export default function FooterCTA() {
             <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-nomad-green/0 via-nomad-green to-nomad-green/0 opacity-50" />
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-[2px] bg-nomad-green shadow-[0_0_20px_rgba(34,197,94,1)] animate-pulse" />
 
-            <div className="relative z-10">
-              <h3 className="text-2xl font-black font-display uppercase tracking-widest text-white mb-10 flex flex-col gap-1">
+            <div className="relative z-10 w-full sm:w-auto">
+              <h3 className="text-xl sm:text-2xl font-black font-display uppercase tracking-widest text-white mb-8 sm:mb-10 flex flex-col gap-1 sm:gap-2">
                 <span>Reserve Your</span>
                 <span className="text-nomad-green">Priority Access</span>
               </h3>
@@ -282,7 +282,7 @@ export default function FooterCTA() {
                           if (status === 'error') setStatus('idle');
                         }}
                         id="nomad-name"
-                        className="peer w-full bg-transparent px-0 py-2 text-white placeholder-transparent border-b border-white/20 focus:outline-none focus:border-nomad-green transition-colors font-medium text-lg rounded-none"
+                        className="peer w-full bg-transparent px-0 py-2 text-white placeholder-transparent border-b border-white/20 focus:outline-none focus:border-nomad-green transition-colors font-medium text-base sm:text-lg rounded-none"
                         placeholder="John Doe"
                       />
                       <label htmlFor="nomad-name" className="absolute left-0 -top-3.5 text-[10px] uppercase tracking-widest font-bold text-white/40 transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-2 peer-placeholder-shown:font-medium peer-placeholder-shown:text-white/30 peer-placeholder-shown:normal-case peer-focus:-top-3.5 peer-focus:text-[10px] peer-focus:text-nomad-green peer-focus:uppercase peer-focus:font-bold pointer-events-none">
@@ -300,7 +300,7 @@ export default function FooterCTA() {
                           if (status === 'error') setStatus('idle');
                         }}
                         id="nomad-email"
-                        className="peer w-full bg-transparent px-0 py-2 text-white placeholder-transparent border-b border-white/20 focus:outline-none focus:border-nomad-green transition-colors font-medium text-lg rounded-none"
+                        className="peer w-full bg-transparent px-0 py-2 text-white placeholder-transparent border-b border-white/20 focus:outline-none focus:border-nomad-green transition-colors font-medium text-base sm:text-lg rounded-none"
                         placeholder="hello@example.com"
                       />
                       <label htmlFor="nomad-email" className="absolute left-0 -top-3.5 text-[10px] uppercase tracking-widest font-bold text-white/40 transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-2 peer-placeholder-shown:font-medium peer-placeholder-shown:text-white/30 peer-placeholder-shown:normal-case peer-focus:-top-3.5 peer-focus:text-[10px] peer-focus:text-nomad-green peer-focus:uppercase peer-focus:font-bold pointer-events-none">

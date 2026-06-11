@@ -18,14 +18,16 @@ const CountdownBadge = () => {
       transition={{ duration: 0.8, delay: 0.2 }}
       className="inline-flex items-center mb-8 lg:mb-12 z-10"
     >
-      <div className="flex items-center gap-3 bg-black/40 backdrop-blur-xl px-4 py-2 md:px-5 md:py-2.5 rounded-full border border-white/10 shadow-[0_0_30px_rgba(34,197,94,0.1)]">
-        <span className="relative flex h-2.5 w-2.5">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-nomad-green opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-nomad-green"></span>
-        </span>
-        <span className="text-white/60 uppercase tracking-[0.2em] text-[10px] md:text-xs font-bold font-sans">
-          Live to the world in
-        </span>
+      <div className="flex flex-col md:flex-row items-center gap-2 md:gap-3 bg-black/40 backdrop-blur-xl px-4 py-2.5 md:px-5 md:py-2.5 rounded-3xl md:rounded-full border border-white/10 shadow-[0_0_30px_rgba(34,197,94,0.1)]">
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-nomad-green opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-nomad-green"></span>
+          </span>
+          <span className="text-white/60 uppercase tracking-[0.2em] text-[10px] md:text-xs font-bold font-sans text-center">
+            Live to the world in
+          </span>
+        </div>
         <div className="flex items-center gap-1 font-mono tracking-wider text-xs md:text-sm font-bold">
             <span className="bg-white/5 border border-white/10 px-1.5 md:px-2 py-1 rounded text-white">{days.toString().padStart(2, '0')}</span>
             <span className="text-white/30 px-0.5">:</span>
@@ -344,7 +346,7 @@ export default function Hero({ onJoinWaitlist }: { onJoinWaitlist: () => void })
                     <Play className="w-5 h-5 md:w-6 md:h-6 ml-1" fill="currentColor" />
                   </div>
                   <div className="flex-1 flex justify-center items-center h-12 md:h-14 pl-10 pr-2 md:pl-12 md:pr-2 group-hover:pr-10 group-hover:pl-2 md:group-hover:pr-12 md:group-hover:pl-2 transition-all duration-500">
-                    <span className="text-white group-hover:text-[#111] text-[10px] md:text-sm font-black uppercase tracking-[0.1em] md:tracking-[0.15em] transition-colors duration-500 z-0 whitespace-nowrap">Watch App Announcement</span>
+                    <span className="text-white group-hover:text-[#111] text-xs min-[400px]:text-sm md:text-base font-black uppercase tracking-[0.1em] md:tracking-[0.15em] transition-colors duration-500 z-0 whitespace-nowrap">Watch App Announcement</span>
                   </div>
                 </motion.button>
 

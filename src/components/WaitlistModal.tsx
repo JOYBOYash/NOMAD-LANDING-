@@ -27,9 +27,9 @@ export default function WaitlistModal({ isOpen, onClose, onScrollToJoin, onNever
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed left-1/2 top-1/2 z-[101] w-full max-w-lg -translate-x-1/2 -translate-y-1/2 p-6"
+            className="fixed left-1/2 top-1/2 z-[101] w-full max-w-lg -translate-x-1/2 -translate-y-1/2 p-4 sm:p-6"
           >
-            <div className="relative bg-nomad-charcoal p-10 border border-white/10 shadow-3xl text-nomad-ivory rounded-[2rem] text-center overflow-hidden">
+            <div className="relative bg-nomad-charcoal p-6 sm:p-10 border border-white/10 shadow-3xl text-nomad-ivory rounded-[2rem] text-center overflow-hidden">
               
               <div className="absolute top-0 left-0 w-full h-2 bg-nomad-green" />
 
@@ -37,7 +37,7 @@ export default function WaitlistModal({ isOpen, onClose, onScrollToJoin, onNever
                  onClick={onClose}
                  whileHover={{ scale: 1.1, rotate: 90 }}
                  whileTap={{ scale: 0.9 }}
-                 className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center text-nomad-ivory/50 hover:text-white transition-colors"
+                 className="absolute top-4 sm:top-6 right-4 sm:right-6 w-10 h-10 flex items-center justify-center text-nomad-ivory/50 hover:text-white transition-colors"
               >
                 <X className="w-6 h-6" />
               </motion.button>

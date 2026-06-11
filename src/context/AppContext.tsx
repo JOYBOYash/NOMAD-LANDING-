@@ -12,28 +12,22 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [isSoundEnabled, setIsSoundEnabled] = useState(false);
+  const [isSoundEnabled, setIsSoundEnabled] = useState(true);
   const [cursorVariant, setCursorVariant] = useState<'default' | 'hover' | 'waitlist'>('default');
   
   const audioCtxRef = useRef<AudioContext | null>(null);
-  const clickAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // Preload click audio
-    const audio = new Audio('https://www.dropbox.com/scl/fi/1jk9cld0kmtnwejlcvgdo/mouseclick.mp3?rlkey=mzggow9uor8ilwrxy14qbuatl&raw=1');
-    audio.preload = 'auto';
-    clickAudioRef.current = audio;
+    // We attempt to initialize AudioContext, but it'll be suspended until user interaction
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (AudioContextClass && !audioCtxRef.current) {
+      audioCtxRef.current = new AudioContextClass();
+    }
   }, []);
 
   const initAudio = () => {
-    if (!audioCtxRef.current) {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-      if (AudioContextClass) {
-        audioCtxRef.current = new AudioContextClass();
-      }
-    }
-    if (clickAudioRef.current && clickAudioRef.current.paused) {
-      clickAudioRef.current.load(); // help initialize audio on user interaction
+    if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+      audioCtxRef.current.resume();
     }
   };
 
@@ -73,10 +67,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const playClick = () => {
-    if (!isSoundEnabled || !clickAudioRef.current) return;
+    if (!isSoundEnabled || !audioCtxRef.current) return;
     try {
-      clickAudioRef.current.currentTime = 0;
-      clickAudioRef.current.play().catch(e => console.error("Audio play failed:", e));
+      const ctx = audioCtxRef.current;
+      if (ctx.state === 'suspended') ctx.resume();
+      
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(600, ctx.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.05);
+      
+      gainNode.gain.setValueAtTime(1, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      
+      oscillator.start(ctx.currentTime);
+      oscillator.stop(ctx.currentTime + 0.05);
     } catch (e) {
       console.error(e);
     }
