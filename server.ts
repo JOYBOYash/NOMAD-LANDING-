@@ -32,7 +32,15 @@ async function startServer() {
         return res.status(500).json({ error: "Email configuration missing on server." });
       }
 
-      const transporter = nodemailer.createTransport({
+      const isGmail = NEXT_PUBLIC_SMTP_HOST?.includes('gmail.com');
+      
+      const transporter = isGmail ? nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: NEXT_PUBLIC_SMTP_USER,
+          pass: NEXT_PUBLIC_SMTP_PASS,
+        },
+      }) : nodemailer.createTransport({
         host: NEXT_PUBLIC_SMTP_HOST,
         port: parseInt(NEXT_PUBLIC_SMTP_PORT || '587'),
         secure: NEXT_PUBLIC_SMTP_PORT === '465', // true for 465, false for other ports

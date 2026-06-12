@@ -31,7 +31,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(500).json({ error: "Email configuration missing on server." });
     }
 
-    const transporter = nodemailer.createTransport({
+    const isGmail = NEXT_PUBLIC_SMTP_HOST?.includes('gmail.com');
+
+    const transporter = isGmail ? nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: NEXT_PUBLIC_SMTP_USER,
+        pass: NEXT_PUBLIC_SMTP_PASS,
+      },
+    }) : nodemailer.createTransport({
       host: NEXT_PUBLIC_SMTP_HOST,
       port: parseInt(NEXT_PUBLIC_SMTP_PORT || '587'),
       secure: NEXT_PUBLIC_SMTP_PORT === '465',
@@ -51,8 +59,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     console.log("Message sent via Vercel Function: %s", info.messageId);
     return res.status(200).json({ success: true, messageId: info.messageId });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error sending email:", error);
-    return res.status(500).json({ error: "Failed to send email" });
+    return res.status(500).json({ error: "Failed to send email", details: error.message });
   }
 }
