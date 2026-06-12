@@ -5,6 +5,7 @@ interface AppContextType {
   toggleSound: () => void;
   playHover: () => void;
   playClick: () => void;
+  playPop: () => void;
   cursorVariant: 'default' | 'hover' | 'waitlist';
   setCursorVariant: (variant: 'default' | 'hover' | 'waitlist') => void;
 }
@@ -122,6 +123,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const playPop = () => {
+    if (!isSoundEnabled || !audioCtxRef.current) return;
+    try {
+      const ctx = audioCtxRef.current;
+      if (ctx.state === 'suspended') ctx.resume();
+      
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(400, ctx.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.1);
+      
+      gainNode.gain.setValueAtTime(0, ctx.currentTime);
+      gainNode.gain.linearRampToValueAtTime(1, ctx.currentTime + 0.02);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      
+      oscillator.start(ctx.currentTime);
+      oscillator.stop(ctx.currentTime + 0.15);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
     const handleGlobalTrigger = (e: Event) => {
       const target = e.target as HTMLElement;
@@ -138,7 +166,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [isSoundEnabled]);
 
   return (
-    <AppContext.Provider value={{ isSoundEnabled, toggleSound, playHover, playClick, cursorVariant, setCursorVariant }}>
+    <AppContext.Provider value={{ isSoundEnabled, toggleSound, playHover, playClick, playPop, cursorVariant, setCursorVariant }}>
       {children}
     </AppContext.Provider>
   );

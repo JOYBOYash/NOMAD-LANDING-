@@ -19,6 +19,8 @@ import CustomCursor from './components/CustomCursor';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 
+import assets from './config/assets.json';
+
 function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -33,21 +35,67 @@ function LoadingScreen({ onComplete }: { onComplete: () => void }) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const duration = 2000;
-    const interval = 20;
-    const steps = duration / interval;
-    let currentStep = 0;
+    const imagesToLoad = [
+      assets.images.logo,
+      assets.images.videoThumbnail,
+    ];
+    
+    const videosToLoad = [
+      assets.videos.heroBackground
+    ];
 
-    const timer = setInterval(() => {
-      currentStep++;
-      setProgress(Math.min((currentStep / steps) * 100, 100));
-      if (currentStep >= steps) {
-        clearInterval(timer);
+    let loadedCount = 0;
+    // We add 1 step for the basic "timer" to ensure progress bar moves at least, 
+    // and 1 for window.onload / steady state.
+    const baseFakeSteps = 5;
+    const totalCount = imagesToLoad.length + videosToLoad.length + baseFakeSteps;
+
+    const updateProgress = () => {
+      loadedCount++;
+      const currentProgress = Math.min((loadedCount / totalCount) * 100, 100);
+      setProgress(currentProgress);
+      
+      if (loadedCount >= totalCount) {
         setTimeout(onComplete, 600);
       }
-    }, interval);
+    };
 
-    return () => clearInterval(timer);
+    // Preload Images
+    imagesToLoad.forEach(src => {
+      const img = new Image();
+      img.onload = updateProgress;
+      img.onerror = updateProgress;
+      img.src = src;
+    });
+
+    // Preload Videos
+    videosToLoad.forEach(src => {
+      const video = document.createElement('video');
+      video.onloadeddata = updateProgress;
+      video.onerror = updateProgress;
+      video.src = src;
+      video.load();
+    });
+
+    // Fake steps to keep the bar moving even if cache is instant
+    let stepCount = 0;
+    const fakeTimer = setInterval(() => {
+      stepCount++;
+      updateProgress();
+      if (stepCount >= baseFakeSteps) {
+        clearInterval(fakeTimer);
+      }
+    }, 200);
+
+    // Safety timeout in case assets hang (e.g. adblocker dropping requests, network issues)
+    const safetyTimeout = setTimeout(() => {
+      onComplete();
+    }, 5000);
+
+    return () => {
+      clearInterval(fakeTimer);
+      clearTimeout(safetyTimeout);
+    };
   }, [onComplete]);
 
   return (
@@ -90,8 +138,10 @@ function LoadingScreen({ onComplete }: { onComplete: () => void }) {
       >
         <div className="w-48 lg:w-64 h-[2px] bg-white/10 overflow-hidden rounded-full">
            <motion.div 
-             className="h-full bg-nomad-green w-full"
-             style={{ transform: `translateX(${progress - 100}%)` }}
+             className="h-full bg-nomad-green w-full origin-left"
+             initial={{ scaleX: 0 }}
+             animate={{ scaleX: progress / 100 }}
+             transition={{ duration: 0.3, ease: 'easeOut' }}
            />
         </div>
         <div className="mt-4 text-nomad-green font-mono font-bold text-xs lg:text-sm tracking-widest">
@@ -123,7 +173,8 @@ function MainApp() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userDismissedModal, setUserDismissedModal] = useState(false);
   const { scrollYProgress } = useScroll();
-  const { isSoundEnabled, toggleSound, setCursorVariant } = useAppContext();
+  const { isSoundEnabled, toggleSound, setCursorVariant, playPop } = useAppContext();
+  const location = useLocation();
 
   const scrollToWaitlist = () => {
     setIsModalOpen(false);
@@ -132,6 +183,10 @@ function MainApp() {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  useEffect(() => {
+    setIsLoading(true);
+  }, [location.pathname]);
 
   useEffect(() => {
     // Initialize Lenis exactly once
@@ -178,6 +233,7 @@ function MainApp() {
       // Show modal every time they leave unless they explicitly dismissed it permanently
       if (e.clientY <= 0 && !userDismissedModal && !isModalOpen && !isLoading) {
         setIsModalOpen(true);
+        playPop();
       }
     };
 
@@ -188,7 +244,7 @@ function MainApp() {
     return () => {
       document.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, [userDismissedModal, isModalOpen, isLoading]);
+  }, [userDismissedModal, isModalOpen, isLoading, playPop]);
 
   return (
     <div className="min-h-screen bg-nomad-charcoal text-nomad-ivory font-sans selection:bg-nomad-green selection:text-nomad-charcoal">
