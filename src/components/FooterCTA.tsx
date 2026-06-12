@@ -3,7 +3,7 @@ import { ArrowRight, ChevronDown, CheckCircle, AlertCircle, Users } from 'lucide
 import { FormEvent, useState, useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { db } from '../lib/firebase';
-import { collection, addDoc, serverTimestamp, doc, onSnapshot, runTransaction, getDoc, setDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, onSnapshot, runTransaction, getDoc, setDoc, getCountFromServer } from 'firebase/firestore';
 import ReCAPTCHA from 'react-google-recaptcha';
 
 export default function FooterCTA() {
@@ -21,16 +21,20 @@ export default function FooterCTA() {
   useEffect(() => {
     if (!db) return;
     
-    // Subscribe to a stats document where we keep track of the total count in realtime
-    const unsub = onSnapshot(doc(db, 'stats', 'waitlist'), (docSnap) => {
-      if (docSnap.exists()) {
-        setPeopleJoined(docSnap.data().count || 0);
-      }
-    }, (error) => {
-      console.warn("Could not load real-time counter. Make sure Firestore rules allow read access to stats/waitlist.");
-    });
+    // Periodically sync the count of real documents
+    const fetchCount = async () => {
+       try {
+         const snap = await getCountFromServer(collection(db, 'waitlist'));
+         setPeopleJoined(snap.data().count);
+       } catch (err) {
+         console.warn("Could not load count from server.", err);
+       }
+    };
     
-    return () => unsub();
+    fetchCount();
+    const interval = setInterval(fetchCount, 60000); // refresh every minute
+
+    return () => clearInterval(interval);
   }, []);
 
   const benefits = [
@@ -115,16 +119,8 @@ export default function FooterCTA() {
         throw docError;
       }
 
-      // Increment global counter securely via transaction
-      const statRef = doc(db, 'stats', 'waitlist');
-      await runTransaction(db, async (transaction) => {
-        const statDoc = await transaction.get(statRef);
-        if (!statDoc.exists()) {
-          transaction.set(statRef, { count: 1 });
-        } else {
-          transaction.update(statRef, { count: (statDoc.data().count || 0) + 1 });
-        }
-      });
+      // Update the local peopleJoined state immediately
+      setPeopleJoined(prev => prev + 1);
 
       setStatus('success');
     } catch (error: any) {
@@ -223,11 +219,23 @@ export default function FooterCTA() {
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="text-center p-10 bg-transparent border border-nomad-green/30 w-full"
+                  className="text-center p-10 bg-transparent border border-nomad-green/30 w-full flex flex-col items-center"
                 >
                   <CheckCircle className="w-16 h-16 text-nomad-green mx-auto mb-6 drop-shadow-[0_0_15px_rgba(34,197,94,0.5)]" />
                   <h3 className="text-2xl font-black text-white uppercase tracking-widest mb-3">Priority Secured</h3>
-                  <p className="text-white/60 font-medium font-mono text-sm uppercase">Confirmation email sent. We'll reach out as release approaches.</p>
+                  <p className="text-white/60 font-medium font-mono text-sm uppercase mb-6">Confirmation email sent. We'll reach out as release approaches.</p>
+                  
+                  <a
+                    href="https://linktr.ee/nomad.live"
+                    target="_blank"
+                    rel="noreferrer"
+                    onMouseEnter={() => setCursorVariant('hover')}
+                    onMouseLeave={() => setCursorVariant('default')}
+                    className="inline-flex items-center gap-2 px-6 py-3 border border-nomad-green/50 hover:bg-nomad-green hover:text-[#111] text-nomad-green text-sm uppercase font-bold tracking-widest transition-all shadow-[0_0_15px_rgba(34,197,94,0.15)] hover:shadow-[0_0_25px_rgba(34,197,94,0.4)] cursor-none"
+                  >
+                    <span>Follow our progress</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </a>
                 </motion.div>
               ) : (
                 <form onSubmit={handleJoin} className="w-full flex flex-col gap-8">

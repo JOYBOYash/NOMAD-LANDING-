@@ -66,10 +66,10 @@ export default function Difference() {
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-12 lg:mb-16 gap-8">
           <motion.div
              variants={{ hidden: { opacity: 0, x: -30 }, show: { opacity: 1, x: 0, transition: { duration: 0.6 } } }}
-             className="max-w-2xl w-full"
+             className="w-full flex-1"
           >
-            <h2 className="text-[28px] max-w-full overflow-hidden text-ellipsis sm:text-[40px] md:text-[60px] lg:text-[70px] font-black font-display uppercase leading-[0.9] tracking-[-0.03em] text-white mb-6 break-words">
-              THE NOMAD <br className="hidden md:block"/> DIFFERENCE.
+            <h2 className="text-[28px] max-w-full sm:text-[40px] md:text-[60px] lg:text-[70px] font-black font-display uppercase leading-[0.9] tracking-[-0.03em] text-white mb-6 break-words">
+              THE NOMAD <br /> DIFFERENCE.
             </h2>
             <p className="text-base md:text-[17px] text-[#9ca3af] font-medium leading-relaxed max-w-[420px]">
               Nomad fills the critical gap by combining gamification, rewards, and full organizer authority into a single ecosystem.

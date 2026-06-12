@@ -10,7 +10,7 @@ export default function Problem() {
     
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % painPoints.length);
-    }, 4000);
+    }, 12000);
     
     return () => clearInterval(interval);
   }, [isHovered]);
@@ -18,15 +18,18 @@ export default function Problem() {
   const painPoints = [
     {
       title: "Scattered Apps",
-      desc: "Attendees juggle multiple apps just to find what's happening. Broken navigation means endless confusion."
+      desc: "Attendees juggle multiple apps just to find what's happening. Broken navigation means endless confusion.",
+      image: "https://images.unsplash.com/photo-1512314889357-e157c22f938d?q=80&w=1200&auto=format&fit=crop"
     },
     {
       title: "Low Traffic",
-      desc: "Organizers fight low booth traffic and poor crowd control with passive attendees."
+      desc: "Organizers fight low booth traffic and poor crowd control with passive attendees.",
+      image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1200&auto=format&fit=crop"
     },
     {
       title: "Wasted Budgets",
-      desc: "Sponsors wasting budgets with zero measurable ROI as booths get ignored."
+      desc: "Sponsors wasting budgets with zero measurable ROI as booths get ignored.",
+      image: "https://images.unsplash.com/photo-1556761175-5973dc0f32b7?q=80&w=1200&auto=format&fit=crop"
     }
   ];
 
@@ -69,9 +72,20 @@ export default function Problem() {
           {/* Left Large Image */}
           <motion.div 
             variants={{ hidden: { opacity: 0, scale: 0.95 }, show: { opacity: 1, scale: 1, transition: { duration: 0.6 } } }}
-            className="w-full aspect-square md:aspect-[4/3] lg:aspect-square relative rounded-[2rem] overflow-hidden"
+            className="w-full aspect-square md:aspect-[4/3] lg:aspect-square relative rounded-[2rem] overflow-hidden bg-[#111]"
           >
-             <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1200&auto=format&fit=crop" alt="Boring Event" className="absolute inset-0 w-full h-full object-cover grayscale mix-blend-luminosity opacity-80 hover:grayscale-0 hover:mix-blend-normal hover:opacity-100 transition-all duration-700" />
+             <AnimatePresence mode="wait">
+               <motion.img 
+                  key={activeIndex}
+                  src={painPoints[activeIndex].image} 
+                  alt={painPoints[activeIndex].title} 
+                  initial={{ opacity: 0, scale: 1.05 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
+                  className="absolute inset-0 w-full h-full object-cover grayscale mix-blend-luminosity opacity-80 hover:grayscale-0 hover:mix-blend-normal hover:opacity-100 transition-all duration-700" 
+               />
+             </AnimatePresence>
           </motion.div>
 
           {/* Right Column: Stack of Items */}
@@ -122,10 +136,11 @@ export default function Problem() {
                       {/* Progress Bar Line */}
                       {isActive && !isHovered && (
                         <motion.div
+                          key={`progress-${activeIndex}`}
                           className="absolute bottom-[-1px] left-0 h-[2px] bg-nomad-green z-10"
                           initial={{ width: "0%" }}
                           animate={{ width: "100%" }}
-                          transition={{ duration: 4, ease: "linear" }}
+                          transition={{ duration: 12, ease: "linear" }}
                         />
                       )}
                       {isActive && isHovered && (
