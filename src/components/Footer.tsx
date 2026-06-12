@@ -19,7 +19,7 @@ export default function Footer() {
             <Link to="/privacy"><motion.span whileHover={{ color: '#22C55E' }} className="transition-colors hover:text-nomad-green">Privacy Policy</motion.span></Link>
             <Link to="/terms"><motion.span whileHover={{ color: '#22C55E' }} className="transition-colors hover:text-nomad-green">Terms of Service</motion.span></Link>
             <a 
-               href="mailto:kickstartnetworks@gmail.com" 
+               href="mailto:nomadlivesupport@gmail.com" 
                className="bg-[#22C55E]/10 border border-[#22C55E]/30 text-[#22C55E] hover:bg-[#22C55E] hover:text-[#111] px-5 py-2.5 rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(34,197,94,0.15)] hover:shadow-[0_0_20px_rgba(34,197,94,0.4)]"
             >
               Contact Us

@@ -48,7 +48,7 @@ export default function PrivacyPolicy() {
           <section>
             <h2 className="text-2xl font-bold text-white mb-4 uppercase tracking-widest font-sans">5. Contact Us</h2>
             <p>If you have any questions about this Privacy Policy, please contact us at: <br/>
-            <a href="mailto:kickstartnetworks@gmail.com" className="text-nomad-green hover:underline mt-2 inline-block">kickstartnetworks@gmail.com</a></p>
+            <a href="mailto:nomadlivesupport@gmail.com" className="text-nomad-green hover:underline mt-2 inline-block">nomadlivesupport@gmail.com</a></p>
           </section>
 
           <p className="border-t border-white/10 pt-8 mt-12 text-sm text-white/50">Last updated: June 9, 2026</p>

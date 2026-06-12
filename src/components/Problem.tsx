@@ -19,17 +19,17 @@ export default function Problem() {
     {
       title: "Scattered Apps",
       desc: "Attendees juggle multiple apps just to find what's happening. Broken navigation means endless confusion.",
-      image: "https://images.unsplash.com/photo-1512314889357-e157c22f938d?q=80&w=1200&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1555774698-0b77e0d5fac6?q=80&w=1200&auto=format&fit=crop"
     },
     {
       title: "Low Traffic",
       desc: "Organizers fight low booth traffic and poor crowd control with passive attendees.",
-      image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1200&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop"
     },
     {
       title: "Wasted Budgets",
       desc: "Sponsors wasting budgets with zero measurable ROI as booths get ignored.",
-      image: "https://images.unsplash.com/photo-1556761175-5973dc0f32b7?q=80&w=1200&auto=format&fit=crop"
+      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop"
     }
   ];
 
