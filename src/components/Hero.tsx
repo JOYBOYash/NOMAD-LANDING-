@@ -132,9 +132,17 @@ export default function Hero({ onJoinWaitlist }: { onJoinWaitlist: () => void })
   const modalVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (bgVideoRef.current) bgVideoRef.current.muted = !isSoundEnabled;
-    if (modalVideoRef.current) modalVideoRef.current.muted = !isSoundEnabled;
-  }, [isSoundEnabled]);
+    if (bgVideoRef.current) {
+      bgVideoRef.current.muted = !isSoundEnabled;
+      bgVideoRef.current.play().catch(e => console.log("Bg video play error:", e));
+    }
+    if (modalVideoRef.current) {
+      modalVideoRef.current.muted = !isSoundEnabled;
+      if (showVideo) {
+        modalVideoRef.current.play().catch(e => console.log("Modal video play error:", e));
+      }
+    }
+  }, [isSoundEnabled, showVideo]);
 
   useEffect(() => {
     if ((isMenuOpen && typeof window !== 'undefined' && window.innerWidth < 1024) || showVideo) {

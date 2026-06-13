@@ -13,7 +13,7 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [isSoundEnabled, setIsSoundEnabled] = useState(true);
+  const [isSoundEnabled, setIsSoundEnabled] = useState(false);
   const [cursorVariant, setCursorVariant] = useState<'default' | 'hover' | 'waitlist'>('default');
   
   const audioCtxRef = useRef<AudioContext | null>(null);
