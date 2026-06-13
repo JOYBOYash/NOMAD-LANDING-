@@ -6,6 +6,7 @@ interface AppContextType {
   playHover: () => void;
   playClick: () => void;
   playPop: () => void;
+  setIsSoundEnabled: (enabled: boolean) => void;
   cursorVariant: 'default' | 'hover' | 'waitlist';
   setCursorVariant: (variant: 'default' | 'hover' | 'waitlist') => void;
 }
@@ -13,7 +14,7 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [isSoundEnabled, setIsSoundEnabled] = useState(false);
+  const [isSoundEnabled, setIsSoundEnabled] = useState(true);
   const [cursorVariant, setCursorVariant] = useState<'default' | 'hover' | 'waitlist'>('default');
   
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -166,7 +167,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [isSoundEnabled]);
 
   return (
-    <AppContext.Provider value={{ isSoundEnabled, toggleSound, playHover, playClick, playPop, cursorVariant, setCursorVariant }}>
+    <AppContext.Provider value={{ isSoundEnabled, toggleSound, setIsSoundEnabled, playHover, playClick, playPop, cursorVariant, setCursorVariant }}>
       {children}
     </AppContext.Provider>
   );

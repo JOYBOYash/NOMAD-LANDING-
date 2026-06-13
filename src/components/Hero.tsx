@@ -114,7 +114,7 @@ function NavPanelContent({ handleJoin, setCursorVariant, activeSection, isSoundE
 
 export default function Hero({ onJoinWaitlist }: { onJoinWaitlist: () => void }) {
   const containerRef = useRef<HTMLElement>(null);
-  const { setCursorVariant, isSoundEnabled, toggleSound } = useAppContext();
+  const { setCursorVariant, isSoundEnabled, toggleSound, setIsSoundEnabled } = useAppContext();
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
@@ -133,13 +133,37 @@ export default function Hero({ onJoinWaitlist }: { onJoinWaitlist: () => void })
 
   useEffect(() => {
     if (bgVideoRef.current) {
-      bgVideoRef.current.muted = !isSoundEnabled;
-      bgVideoRef.current.play().catch(e => console.log("Bg video play error:", e));
+      if (showVideo) {
+        bgVideoRef.current.pause();
+      } else {
+        bgVideoRef.current.muted = !isSoundEnabled;
+        const playPromise = bgVideoRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(e => {
+            console.log("Bg video play error unmuted, falling back to muted:", e);
+            if (bgVideoRef.current) {
+              bgVideoRef.current.muted = true;
+              bgVideoRef.current.play().catch(err => console.log("Bg video play error muted:", err));
+            }
+          });
+        }
+      }
     }
     if (modalVideoRef.current) {
-      modalVideoRef.current.muted = !isSoundEnabled;
       if (showVideo) {
-        modalVideoRef.current.play().catch(e => console.log("Modal video play error:", e));
+        modalVideoRef.current.muted = !isSoundEnabled;
+        const modalPlay = modalVideoRef.current.play();
+        if (modalPlay !== undefined) {
+          modalPlay.catch(e => {
+            console.log("Modal video play error:", e);
+            if (modalVideoRef.current) {
+              modalVideoRef.current.muted = true;
+              modalVideoRef.current.play().catch(err => console.log("Modal play error muted:", err));
+            }
+          });
+        }
+      } else {
+        modalVideoRef.current.pause();
       }
     }
   }, [isSoundEnabled, showVideo]);
