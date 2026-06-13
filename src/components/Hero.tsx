@@ -372,12 +372,12 @@ export default function Hero({ onJoinWaitlist }: { onJoinWaitlist: () => void })
                   onClick={() => setShowVideo(true)}
                   onMouseEnter={() => setCursorVariant('hover')}
                   onMouseLeave={() => setCursorVariant('default')}
-                  className="group relative flex flex-row items-center justify-center backdrop-blur-md bg-[#111]/40 hover:bg-nomad-green border border-white/10 hover:border-nomad-green rounded-full p-2 cursor-none transition-all duration-500 hover:shadow-[0_0_40px_rgba(34,197,94,0.3)] shadow-2xl overflow-hidden w-[360px] md:w-[460px] h-16 md:h-20"
+                  className="group flex flex-row items-center gap-6 backdrop-blur-md bg-[#111]/40 hover:bg-nomad-green border border-white/10 hover:border-nomad-green rounded-full p-2 pr-8 md:pr-10 cursor-none transition-colors duration-500 hover:shadow-[0_0_40px_rgba(34,197,94,0.3)] shadow-2xl w-fit"
                 >
-                  <div className="absolute left-2 group-hover:left-[calc(100%-3.5rem)] md:group-hover:left-[calc(100%-4.5rem)] w-12 h-12 md:w-16 md:h-16 rounded-full bg-nomad-green group-hover:bg-[#111] flex items-center justify-center text-[#111] group-hover:text-nomad-green transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] shadow-[0_0_20px_rgba(34,197,94,0.4)] group-hover:shadow-none z-10">
+                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-nomad-green group-hover:bg-[#111] flex items-center justify-center text-[#111] group-hover:text-nomad-green transition-colors duration-500 shadow-[0_0_20px_rgba(34,197,94,0.4)] group-hover:shadow-none shrink-0">
                     <Play className="w-5 h-5 md:w-6 md:h-6 ml-1" fill="currentColor" />
                   </div>
-                  <span className="text-white group-hover:text-[#111] px-14 md:px-20 text-[13px] sm:text-[15px] md:text-lg font-black uppercase tracking-wider md:tracking-[0.1em] transition-all duration-500 z-0 whitespace-nowrap text-center w-full">Watch App Announcement</span>
+                  <span className="text-white group-hover:text-[#111] text-[13px] sm:text-[15px] md:text-lg font-black uppercase tracking-wider md:tracking-[0.1em] transition-colors duration-500 whitespace-nowrap">Watch App Announcement</span>
                 </motion.button>
 
                 <div className="relative flex justify-center pb-12 w-full">
