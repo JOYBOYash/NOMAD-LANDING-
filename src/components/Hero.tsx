@@ -345,7 +345,7 @@ export default function Hero({ onJoinWaitlist }: { onJoinWaitlist: () => void })
                   <div className="absolute left-2 group-hover:left-[calc(100%-3.5rem)] md:group-hover:left-[calc(100%-4.5rem)] w-12 h-12 md:w-16 md:h-16 rounded-full bg-nomad-green group-hover:bg-[#111] flex items-center justify-center text-[#111] group-hover:text-nomad-green transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] shadow-[0_0_20px_rgba(34,197,94,0.4)] group-hover:shadow-none z-10">
                     <Play className="w-5 h-5 md:w-6 md:h-6 ml-1" fill="currentColor" />
                   </div>
-                  <span className="text-white group-hover:text-[#111] pl-14 pr-4 md:pl-20 md:pr-4 group-hover:pl-4 group-hover:pr-14 md:group-hover:pl-4 md:group-hover:pr-20 text-[13px] sm:text-[15px] md:text-lg font-black uppercase tracking-wider md:tracking-[0.1em] transition-all duration-500 z-0 whitespace-nowrap text-center w-full block leading-[48px] md:leading-[64px]">Watch App Announcement</span>
+                  <span className="text-white group-hover:text-[#111] px-14 md:px-20 text-[13px] sm:text-[15px] md:text-lg font-black uppercase tracking-wider md:tracking-[0.1em] transition-all duration-500 z-0 whitespace-nowrap text-center w-full">Watch App Announcement</span>
                 </motion.button>
 
                 <div className="relative flex justify-center pb-12 w-full">
